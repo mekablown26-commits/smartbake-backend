@@ -1,0 +1,216 @@
+// ═══════════════════════════════════════════════════════════
+// FILE 1: AdminController.java (FIXED)
+// src/main/java/com/smartbake/backend/controller/AdminController.java
+// ═══════════════════════════════════════════════════════════
+
+package com.smartbake.backend.controller;
+
+import com.smartbake.backend.entity.Order;
+import com.smartbake.backend.entity.Product;
+import com.smartbake.backend.repository.OrderRepository;
+import com.smartbake.backend.repository.ProductRepository;
+import com.smartbake.backend.repository.OrderItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
+
+@Controller
+@RequestMapping("/admin")
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminController {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    private static final String UPLOAD_DIR = "uploads/products/";
+
+    // ───── Product Management ─────
+
+    @GetMapping("/products")
+    public String listProducts(Model model) {
+        // ← FIXED: only show non-deleted products
+        model.addAttribute("products", productRepository.findByDeletedFalse());
+        return "admin/products";
+    }
+
+    @GetMapping("/products/new")
+    public String showNewProductForm(Model model) {
+        model.addAttribute("product", new Product());
+        return "admin/product-form";
+    }
+
+    @PostMapping("/products")
+    public String saveProduct(@ModelAttribute Product product,
+                              @RequestParam("imageFile") MultipartFile imageFile,
+                              Model model) throws IOException {
+
+        if (!imageFile.isEmpty()) {
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            String originalFilename = imageFile.getOriginalFilename();
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                originalFilename = "image";
+            }
+            String safeFilename = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
+            String fileName = UUID.randomUUID() + "_" + safeFilename;
+
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            Files.write(filePath, imageFile.getBytes());
+
+            String webPath = "/uploads/products/" + fileName;
+            product.setImageUrl(webPath);
+            System.out.println("DEBUG: Saved image = " + webPath);
+            System.out.println("DEBUG: Full path  = " + filePath.toAbsolutePath());
+        }
+
+        Product saved = productRepository.save(product);
+        if (saved != null) {
+            model.addAttribute("product", saved);
+        }
+        return "admin/product-success";
+    }
+
+    @GetMapping("/products/edit/{id}")
+    public String showEditForm(@PathVariable long id, Model model) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product Id: " + id));
+        model.addAttribute("product", product);
+        return "admin/product-form";
+    }
+
+    @PostMapping("/products/edit/{id}")
+    public String updateProduct(@PathVariable long id,
+                                @ModelAttribute Product updatedProduct,
+                                @RequestParam("imageFile") MultipartFile imageFile,
+                                RedirectAttributes redirectAttributes) throws IOException {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        product.setName(updatedProduct.getName());
+        product.setDescription(updatedProduct.getDescription());
+        product.setPrice(updatedProduct.getPrice());
+        product.setCategory(updatedProduct.getCategory());
+        product.setStock(updatedProduct.getStock());
+
+        // Only update image if a new one was uploaded
+        if (!imageFile.isEmpty()) {
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String originalFilename = imageFile.getOriginalFilename();
+            if (originalFilename == null || originalFilename.isEmpty()) originalFilename = "image";
+            String safeFilename = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
+            String fileName = UUID.randomUUID() + "_" + safeFilename;
+
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            Files.write(filePath, imageFile.getBytes());
+            product.setImageUrl("/uploads/products/" + fileName);
+        }
+
+        productRepository.save(product);
+        redirectAttributes.addFlashAttribute("message", "Product updated successfully!");
+        return "redirect:/admin/products";
+    }
+
+     @PostMapping("/products/delete/{id}")
+    public String deleteProduct(@PathVariable long id, RedirectAttributes redirectAttributes) {
+        try {
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            product.setDeleted(true);
+            productRepository.save(product);
+            redirectAttributes.addFlashAttribute("message", "Product removed successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+        }
+        return "redirect:/admin/products";
+    }
+
+
+    // ───── Orders ─────
+
+    @GetMapping("/orders")
+    public String listOrders(Model model) {
+        List<Order> orders = orderRepository.findAll();
+        model.addAttribute("orders", orders);
+        return "admin/orders";
+    }
+
+    @GetMapping("/orders/{id}")
+    public String orderDetails(@PathVariable long id, Model model) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order Id: " + id));
+        model.addAttribute("order", order);
+        model.addAttribute("isAdmin", true);
+        return "admin/order-details";
+    }
+
+    @PostMapping("/orders/{id}/update-delivery")
+    public String updateDeliveryInfo(
+            @PathVariable long id,
+            @RequestParam String riderName,
+            @RequestParam String riderPhone,
+            @RequestParam String riderBikePlate,
+            @RequestParam Double deliveryFee,
+            RedirectAttributes redirectAttributes) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order Id: " + id));
+        order.setRiderName(riderName);
+        order.setRiderPhone(riderPhone);
+        order.setRiderBikePlate(riderBikePlate);
+        order.setDeliveryFee(deliveryFee);
+        orderRepository.save(order);
+        redirectAttributes.addFlashAttribute("message", "Delivery info updated!");
+        return "redirect:/admin/orders/" + id;
+    }
+
+    @PostMapping("/orders/{id}/update-status")
+    public String updateOrderStatus(@PathVariable long id,
+                                    @RequestParam("status") String newStatus,
+                                    Model model) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order Id: " + id));
+        if (!List.of("PENDING", "PROCESSING", "READY", "DELIVERED", "CANCELLED").contains(newStatus)) {
+            model.addAttribute("error", "Invalid status");
+            model.addAttribute("order", order);
+            return "admin/order-details";
+        }
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+        return "redirect:/admin/orders/" + id;
+    }
+
+    @GetMapping("/contact-settings")
+    public String showContactSettings(Model model) {
+        return "admin/contact-settings";
+    }
+
+    @PostMapping("/contact/update")
+    public String updateContact(@RequestParam String phone, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("message", "Contact number updated to " + phone);
+        return "redirect:/admin/contact-settings";
+    }
+}

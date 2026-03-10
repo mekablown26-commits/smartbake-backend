@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout – SmartBake</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-dark);
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('/images/donuts.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+        }
+        h1 {
+            text-align: center;
+            color: var(--accent-pink);
+            font-size: 2.8rem;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 4px 12px rgba(233,30,99,0.3);
+        }
+        .summary-card, .form-card {
+            background: rgba(40,40,40,0.9);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(233,30,99,0.15);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        th, td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        th {
+            background: var(--accent-pink);
+            color: white;
+            font-weight: 600;
+        }
+        .total {
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-align: right;
+            padding: 1.5rem;
+            background: rgba(233,30,99,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #444;
+            border-radius: 12px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 1rem;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
+        }
+        .btn-submit {
+    display: block;
+    width: 100%;
+    padding: 1.2rem;
+    background: #e91e63;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-submit:hover {
+    background: #c2185b;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(233,30,99,0.4);
+}
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            color: var(--accent-gold-light);
+        }
+        @media (max-width: 768px) {
+            .container { padding: 0 1rem; }
+            h1 { font-size: 2.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Checkout</h1>
+
+        <div class="summary-card">
+            <h2 style="text-align:center; color:var(--accent-pink);">Order Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${cartItems}">
+                        <td th:text="${item.product.name}"></td>
+                        <td th:text="${item.quantity}"></td>
+                        <td th:text="${item.product.price} + ' KSh'"></td>
+                        <td th:text="${item.subtotal} + ' KSh'"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="total">
+                Total: <span th:text="${total} + ' KSh'"></span>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form th:action="@{/cart/checkout}" method="post">
+                <h2 style="text-align:center; color:var(--accent-pink);">Your Details</h2>
+
+                <div class="form-group">
+                    <label for="customerName">Full Name *</label>
+                    <input type="text" id="customerName" name="customerName" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="customerPhone">Phone Number *</label>
+                    <input type="tel" id="customerPhone" name="customerPhone" required placeholder="e.g. 0712345678">
+                </div>
+
+                <div class="form-group">
+                    <label for="deliveryAddress">Delivery Address / Pickup Location</label>
+                    <textarea id="deliveryAddress" name="deliveryAddress" rows="3" placeholder="Enter your delivery address or preferred pickup location"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any special requests? (e.g. 'Please add candles')"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method *</label>
+                    <select id="paymentMethod" name="paymentMethod" required style="width:100%; padding:1rem; border-radius:12px; background:#2a2a2a; color:white; border:1px solid #444;">
+                        <option value="CASH">Cash on Delivery</option>
+                        <option value="PAYBILL">Paybill (M-Pesa)</option>
+                        <option value="CARD" disabled>Card (Coming soon)</option>
+                    </select>
+                </div>
+
+        <button type="submit" class="btn-submit">Confirm & Place Order</button>
+            </form>
+
+            <a href="/cart" class="back-link">← Back to Cart</a>
+        </div>
+    </div>
+
+</body>
+</html>

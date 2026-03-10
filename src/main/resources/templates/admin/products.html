@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products – SmartBake Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-dark);
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('/images/glazed-donuts.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .admin-header h1 {
+            font-size: 2.8rem;
+            margin: 0;
+            color: var(--accent-pink);
+            text-shadow: 0 4px 12px rgba(233,30,99,0.3);
+        }
+        .btn-add {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--accent-gold), #d4a017);
+            color: #0a0a0a;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(244,196,48,0.3);
+        }
+        .btn-add:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(244,196,48,0.5);
+        }
+        .flash-message {
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .success-msg {
+            background: rgba(76,175,80,0.2);
+            color: #4caf50;
+            border: 1px solid rgba(76,175,80,0.4);
+        }
+        .error-msg {
+            background: rgba(244,67,54,0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(244,67,54,0.4);
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        .product-card {
+            background: rgba(40,40,40,0.92);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(233,30,99,0.15);
+        }
+        .product-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 60px rgba(233,30,99,0.3);
+        }
+        .product-img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .product-body {
+            padding: 1.8rem;
+            text-align: center;
+        }
+        .product-name {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .product-price {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 0.8rem;
+        }
+        .stock-status {
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1rem 0;
+            display: inline-block;
+        }
+        .in-stock { background: rgba(46,125,50,0.25); color: #81c784; }
+        .low-stock { background: rgba(245,124,0,0.25); color: #ffb74d; }
+        .out-of-stock { background: rgba(198,40,40,0.25); color: #ef5350; }
+.actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+        .action-btn {
+            padding: 0.8rem 1.6rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        .edit-btn {
+            background: var(--accent-pink);
+            color: white;
+        }
+        .edit-btn:hover {
+            background: var(--accent-pink-dark);
+            transform: scale(1.05);
+        }
+        .delete-btn {
+            background: rgba(244,67,54,0.85);
+            color: white;
+        }
+        .delete-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.05);
+        }
+        .no-products {
+            text-align: center;
+            padding: 8rem 2rem;
+            color: var(--text-muted);
+            font-size: 1.6rem;
+        }
+        .no-products span {
+            font-size: 5rem;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <!-- Flash messages -->
+        <div th:if="${message}" class="flash-message success-msg" th:text="${message}"></div>
+        <div th:if="${error}" class="flash-message error-msg" th:text="${error}"></div>
+
+        <div class="admin-header">
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="/dashboard" class="btn btn-hero" style="background: var(--accent-pink); color: white;">
+                    ← Back to Dashboard
+                </a>
+                <h1>Manage Products</h1>
+            </div>
+            <a href="/admin/products/add" class="btn btn-add">+ Add New Product</a>
+        </div>
+
+        <div th:if="${products == null or products.empty}" class="no-products">
+            <span>🍰</span>
+            <p>No products added yet — time to bake some magic!</p>
+            <a href="/admin/products/add" class="btn btn-primary" style="margin-top: 2rem;">Add First Product</a>
+        </div>
+
+        <div th:unless="${products.empty}" class="product-grid">
+            <div th:each="product : ${products}" class="product-card">
+                <img th:src="${product.imageUrl} ?: '/images/placeholder-treat.jpg'" 
+     th:alt="${product.name}"
+     th:title="${product.name}"
+     title="Product image"
+     class="product-img">
+
+                <div class="product-body">
+                    <h3 class="product-name" th:text="${product.name}"></h3>
+                    <p class="product-price" th:text="${product.price} + ' KSh'"></p>
+
+                    <!-- FIXED stock status -->
+                    <span class="stock-status"
+                          th:classappend="${product.stock == null or product.stock le 0} ? 'out-of-stock' : (${product.stock le 10} ? 'low-stock' : 'in-stock')">
+                        <span th:text="${product.stock != null and product.stock gt 0} ? ${product.stock} + ' in stock' : 'Out of Stock'"></span>
+                    </span>
+
+                    <div class="actions">
+                        <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" 
+                           class="action-btn edit-btn">Edit</a>
+
+                        <!-- FIXED delete form -->
+                        <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" 
+                              method="post" 
+                              style="display:inline;"
+                              onsubmit="return confirm('Are you sure you want to delete this product?');">
+                            <button type="submit" class="action-btn delete-btn">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

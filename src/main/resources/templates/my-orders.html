@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders – SmartBake</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-dark);
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('/images/macarons.jpg'); /* or donuts, cupcakes, etc. */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+        }
+        h1 {
+            text-align: center;
+            color: var(--accent-pink);
+            font-size: 3rem;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 4px 12px rgba(233,30,99,0.3);
+        }
+        .orders-card {
+            background: rgba(40,40,40,0.88);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(233,30,99,0.15);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        th {
+            background: var(--accent-pink);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        tr {
+            transition: all 0.3s ease;
+        }
+        tr:hover {
+            background: rgba(233,30,99,0.08);
+            transform: translateY(-2px);
+        }
+        td {
+            color: var(--text-primary);
+        }
+        .order-id {
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+        .status-pill {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+        .status-processing { background: #e3f2fd; color: #1976d2; }
+        .status-ready { background: #e8f5e9; color: #2e7d32; }
+        .status-delivered { background: #c8e6c9; color: #1b5e20; }
+        .status-cancelled { background: #ffebee; color: #c62828; }
+        .no-orders {
+            text-align: center;
+            padding: 8rem 2rem;
+            color: var(--text-muted);
+            font-size: 1.6rem;
+        }
+        .no-orders span { font-size: 5rem; display: block; margin-bottom: 1.5rem; }
+        .btn-back {
+            display: inline-block;
+            margin: 3rem auto 0;
+            padding: 1rem 2.5rem;
+            background: var(--accent-pink);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.15rem;
+            transition: all 0.3s;
+        }
+        .btn-back:hover {
+            background: var(--accent-pink-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(233,30,99,0.4);
+        }
+        .action-link {
+            color: var(--accent-pink);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .action-link:hover {
+            color: var(--accent-pink-dark);
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            table { font-size: 0.95rem; }
+            th, td { padding: 1rem; }
+            h1 { font-size: 2.5rem; }
+        }
+        .btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+.btn-danger:hover {
+    background: #c0392b;
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>My Orders</h1>
+
+        <div th:if="${orders.empty}" class="no-orders">
+            <span>📦</span>
+            <p>You haven't placed any orders yet 😔</p>
+            <a href="/dashboard" class="btn-back">Back to Dashboard</a>
+        </div>
+
+        <div th:unless="${orders.empty}" class="orders-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td>
+                            <span class="order-id" th:text="'SB-' + ${order.id}"></span>
+                        </td>
+                        <td th:text="${order.totalAmount} + ' KSh'"></td>
+                        <td>
+                            <span th:class="'status-pill status-' + ${#strings.toLowerCase(order.status)}"
+                                  th:text="${order.status}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></td>
+                        <td>
+                            <!-- Cancel button - only for PENDING / PROCESSING -->
+        <form th:if="${order.status == 'PENDING' or order.status == 'PROCESSING'}"
+              th:action="@{/orders/{id}/cancel(id=${order.id})}" 
+              method="post"
+              style="display:inline;">
+            <button type="submit" 
+                    onclick="return confirm('Cancel this order? This cannot be undone.')"
+                    class="btn btn-danger">Cancel Order</button>
+        </form>
+                            <a th:href="@{/my-orders/{id}(id=${order.id})}" class="action-link">View Details</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="text-align: center;">
+                <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart – SmartBake</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-dark);
+            min-height: 100vh;
+            margin: 0;
+            background-image: url('/images/macarons.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+        }
+        h1 {
+            text-align: center;
+            color: var(--accent-pink);
+            font-size: 2.8rem;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 4px 12px rgba(233,30,99,0.3);
+        }
+        .cart-card {
+            background: rgba(40,40,40,0.9);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(233,30,99,0.15);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1.4rem 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        th {
+            background: var(--accent-pink);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover {
+            background: rgba(233,30,99,0.08);
+        }
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .total-row {
+            background: rgba(233,30,99,0.1);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        .btn-group {
+            text-align: center;
+            margin: 2.5rem 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            margin: 0.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: var(--accent-pink);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--accent-pink-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(233,30,99,0.4);
+        }
+        .btn-secondary {
+            background: #4caf50;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #43a047;
+            transform: translateY(-3px);
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+        }
+        .action-link {
+            color: var(--accent-pink);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .action-link:hover {
+            color: var(--accent-pink-dark);
+            text-decoration: underline;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 6rem 2rem;
+            color: var(--text-muted);
+        }
+        .empty-cart .emoji {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            table { font-size: 0.95rem; }
+            th, td { padding: 1rem; }
+            .product-img { width: 60px; height: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Your Cart</h1>
+
+        <div th:if="${cartItems.empty}" class="empty-cart">
+            <div class="emoji">🛒😔</div>
+            <p>Your cart is empty... let's add some treats! 🍪</p>
+            <a href="/products" class="btn btn-primary">Continue Shopping</a>
+        </div>
+
+        <div th:unless="${cartItems.empty}" class="cart-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${cartItems}">
+                        <td>
+                            <img th:src="${item.product.imageUrl} ?: '/images/placeholder-treat.jpg'" 
+                                 alt="Product image"
+                                 th:alt="${item.product.name} ?: 'Product image'"
+                                 th:title="${item.product.name} ?: 'Product image'"
+                                 class="product-img">
+                        </td>
+                        <td th:text="${item.product.name}"></td>
+                        <td th:text="${item.product.price} + ' KSh'"></td>
+                        <td th:text="${item.quantity}"></td>
+                        <td th:text="${item.subtotal} + ' KSh'"></td>
+                        <td>
+                            <form th:action="@{/cart/remove/{id}(id=${item.product.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" style="padding:0.6rem 1.2rem; font-size:0.9rem;">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="4" style="text-align:right;">Total:</td>
+                        <td colspan="2" th:text="${total} + ' KSh'"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="btn-group">
+                <form th:action="@{/cart/clear}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Clear Cart</button>
+                </form>
+                <a href="/products" class="btn btn-secondary">Continue Shopping</a>
+                <a href="/cart/checkout" class="btn btn-primary">Proceed to Checkout</a>
+            </div>
+
+            <div style="text-align:center; margin-top:2rem;">
+                <a href="/dashboard" class="action-link">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

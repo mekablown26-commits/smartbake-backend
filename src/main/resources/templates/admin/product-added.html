@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <title>Product Added - SmartBake</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8e1e9; text-align: center; padding: 60px; }
+        h1 { color: #e91e63; font-size: 2.8em; margin-bottom: 10px; }
+        .success-card { background: white; padding: 40px; border-radius: 15px; max-width: 700px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .product-preview { margin: 30px 0; }
+        img { max-width: 300px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .details { font-size: 1.2em; color: #333; margin: 15px 0; }
+        .btn { display: inline-block; padding: 14px 30px; background: #e91e63; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 10px; transition: background 0.3s; }
+        .btn:hover { background: #c2185b; }
+        .secondary { background: #6c757d; }
+        .secondary:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+    <h1>🎉 Product Added Successfully!</h1>
+
+    <div class="success-card">
+        <p style="font-size: 1.3em; color: #28a745; margin-bottom: 30px;">
+            Your new treat is now live in the catalog!
+        </p>
+
+        <div class="product-preview">
+            <h2 th:text="${product.name}"></h2>
+            <img th:if="${product.imagePath}" th:src="${product.imagePath}" alt="New product">
+            <div class="details">
+                <p><strong>Price:</strong> <span th:text="${product.price} + ' KSh'"></span></p>
+                <p><strong>Category:</strong> <span th:text="${product.category}"></span></p>
+                <p th:if="${product.description}"><strong>Description:</strong> <span th:text="${product.description}"></span></p>
+            </div>
+        </div>
+
+        <a href="/admin/products/new" class="btn">Add Another Product</a>
+        <a href="/admin/products" class="btn">View All Products</a>
+        <a href="/dashboard" class="btn secondary">Back to Dashboard</a>
+    </div>
+</body>
+</html>

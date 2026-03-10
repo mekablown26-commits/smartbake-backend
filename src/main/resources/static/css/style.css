@@ -1,0 +1,169 @@
+/* ================================================
+   SmartBake Homepage – Dark Warm Bakery Theme
+   ================================================ */
+
+:root {
+    --bg-dark: #0a0a0a;
+    --bg-card: #1c1c1c;
+    --text-light: #f8f8f8;
+    --text-muted: #bbbbbb;
+    --accent-pink: #e91e63;
+    --accent-pink-dark: #c2185b;
+    --accent-gold: #f4c430;
+    --overlay: rgba(10, 10, 10, 0.75);
+    --shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Hero Section */
+.hero {
+    height: 90vh;
+    min-height: 600px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    padding: 2rem;
+}
+
+.hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 4.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent-pink);
+    text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+
+.hero p {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    color: var(--text-muted);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-hero {
+    padding: 1.2rem 2.8rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.4s ease;
+}
+
+.btn-primary {
+    background: var(--accent-pink);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--accent-pink-dark);
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(233,30,99,0.5);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.btn-outline:hover {
+    background: var(--accent-gold);
+    color: #0a0a0a;
+}
+
+/* Featured Treats */
+.featured {
+    padding: 6rem 0;
+    background: var(--bg-card);
+}
+
+.featured h2 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 3rem;
+    color: var(--accent-gold);
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 0 1rem;
+}
+
+.product-card {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: var(--shadow);
+}
+
+.product-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 50px rgba(233,30,99,0.2);
+}
+
+.product-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.product-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-light);
+}
+
+.product-info p.price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+    animation: fadeInUp 1s ease-out forwards;
+}

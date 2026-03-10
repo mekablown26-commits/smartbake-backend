@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us – SmartBake</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: var(--bg-dark); color: white; min-height: 100vh; }
+        .container { max-width: 800px; margin: 6rem auto; padding: 0 1.5rem; text-align: center; }
+        h1 { color: var(--accent-pink); font-size: 3rem; margin-bottom: 2rem; }
+        .contact-card {
+            background: rgba(40,40,40,0.9);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(233,30,99,0.2);
+        }
+        .phone-number {
+            font-size: 2.8rem;
+            color: var(--accent-gold);
+            margin: 2rem 0;
+            font-weight: bold;
+            display: block;
+        }
+        .phone-number:hover { color: var(--accent-pink); }
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+        .btn-whatsapp:hover {
+            background: #20b358;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(37,213,102,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Contact Us</h1>
+
+        <div class="contact-card">
+            <h2>Need help with your order?</h2>
+            <p style="font-size: 1.4rem; margin: 2rem 0;">
+                Call or WhatsApp us anytime:
+            </p>
+
+            <a th:href="@{'tel:' + ${contactPhone}}" class="phone-number" th:text="${contactPhone}"></a>
+
+            <a th:href="${whatsappLink}" target="_blank" class="btn-whatsapp">
+                Chat on WhatsApp
+            </a>
+
+            <p style="margin-top: 2rem; font-size: 1.1rem; color: var(--text-muted);">
+                Available 7 AM – 10 PM daily<br>
+                We'll get back to you as soon as possible!
+            </p>
+        </div>
+
+        <a href="/dashboard" class="btn" style="margin-top: 3rem; background: var(--accent-pink); color: white;">
+            Back to Dashboard
+        </a>
+    </div>
+
+</body>
+</html>

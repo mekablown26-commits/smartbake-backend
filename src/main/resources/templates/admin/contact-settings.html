@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Contact Number – Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 600px; margin: 6rem auto;">
+        <h1>Edit Customer Service Number</h1>
+
+        <form th:action="@{/admin/contact/update}" method="post">
+            <label>Phone Number (for calls & WhatsApp)</label>
+            <input type="text" name="phone" th:value="${contactPhone}" required 
+                   placeholder="0712345678" style="width:100%; padding:1rem; margin:1rem 0;">
+
+            <button type="submit" class="btn" style="background:var(--accent-pink); color:white; padding:1rem 2rem;">
+                Save Changes
+            </button>
+        </form>
+
+        <a href="/admin/dashboard" style="display:block; margin-top:2rem;">Back to Admin Dashboard</a>
+    </div>
+</body>
+</html>

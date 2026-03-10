@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders – SmartBake Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .admin-header h1 {
+            font-size: 2.8rem;
+            margin: 0;
+        }
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(233,30,99,0.12);
+            color: var(--accent-pink);
+            border: 1px solid rgba(233,30,99,0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent-pink);
+            color: white;
+            border-color: var(--accent-pink);
+        }
+        .search-container {
+            position: relative;
+            width: 320px;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 0.9rem 1.5rem 0.9rem 3rem;
+            border-radius: 50px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 0 4px rgba(233,30,99,0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+        .order-table-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-table th {
+            background: rgba(233,30,99,0.15);
+            color: var(--accent-pink);
+            padding: 1.3rem 1.6rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .order-table td {
+            padding: 1.3rem 1.6rem;
+            border-top: 1px solid #2a2a2a;
+        }
+        tr:hover {
+            background: rgba(233,30,99,0.08);
+            transition: background 0.2s;
+        }
+        .status-badge {
+            padding: 0.6rem 1.4rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+        .action-btn {
+            color: var(--accent-gold);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .action-btn:hover {
+            color: #ffe082;
+            text-decoration: underline;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+        }
+        .no-orders span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-image" style="background-image: url('/images/pastrey.jpg');">
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>All Orders</h1>
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-bar" placeholder="Search customer, order #, status...">
+                </div>
+                <div class="filter-controls">
+                    <button class="filter-btn active" onclick="filterStatus('')">All</button>
+                    <button class="filter-btn" onclick="filterStatus('PENDING')">Pending</button>
+                    <button class="filter-btn" onclick="filterStatus('PROCESSING')">Processing</button>
+                    <button class="filter-btn" onclick="filterStatus('READY')">Ready</button>
+                    <button class="filter-btn" onclick="filterStatus('DELIVERED')">Delivered</button>
+                    <button class="filter-btn" onclick="filterStatus('CANCELLED')">Cancelled</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-table-container" th:if="${orders != null and !orders.empty}">
+            <table class="order-table" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Payment</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Placed On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${orders}" class="order-row" 
+                        th:data-customer="${order.customerName ?: order.user?.email ?: 'Guest'}"
+                        th:data-status="${order.status}"
+                        th:data-orderid="${order.id}"
+                        th:onclick="'window.location=\'' + @{/admin/orders/{id}(id=${order.id})} + '\''">
+                        <td><strong th:text="${orderNumber} ?: 'SB-' + ${order.id}"></strong></td>
+                        <td th:text="${order.customerName != null ? order.customerName : order.user?.email != null ? order.user.email : 'Guest'}"></td>                        <td th:text="${order.totalAmount} + ' KSh'"></td>
+                        <td>
+                            <span class="status-badge" th:classappend="'status-' + ${#strings.toLowerCase(order.status)}">
+                                <span th:text="${order.status ?: 'Not Set'}"></span>
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+                        <td>
+                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="action-btn">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${orders == null or orders.empty}" class="no-orders">
+            <span>🍪</span>
+            <p>No orders yet — the oven is warming up!</p>
+        </div>
+
+        <div style="text-align: center; margin: 3rem 0;">
+            <a href="/dashboard" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Live search filter
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        // Status filter buttons
+        function filterStatus(status) {
+            const rows = document.querySelectorAll('#ordersTable tbody tr');
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                if (status === '' || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Highlight active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
