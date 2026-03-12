@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════
-// FILE 1: AdminController.java (FIXED)
-// src/main/java/com/smartbake/backend/controller/AdminController.java
-// ═══════════════════════════════════════════════════════════
-
 package com.smartbake.backend.controller;
 
 import com.smartbake.backend.entity.Order;
@@ -10,6 +5,7 @@ import com.smartbake.backend.entity.Product;
 import com.smartbake.backend.repository.OrderRepository;
 import com.smartbake.backend.repository.ProductRepository;
 import com.smartbake.backend.repository.OrderItemRepository;
+import com.smartbake.backend.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -18,13 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin")
@@ -40,13 +31,13 @@ public class AdminController {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
-    private static final String UPLOAD_DIR = "uploads/products/";
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     // ───── Product Management ─────
 
     @GetMapping("/products")
     public String listProducts(Model model) {
-        // ← FIXED: only show non-deleted products
         model.addAttribute("products", productRepository.findByDeletedFalse());
         return "admin/products";
     }
@@ -63,25 +54,8 @@ public class AdminController {
                               Model model) throws IOException {
 
         if (!imageFile.isEmpty()) {
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
-
-            String originalFilename = imageFile.getOriginalFilename();
-            if (originalFilename == null || originalFilename.isEmpty()) {
-                originalFilename = "image";
-            }
-            String safeFilename = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
-            String fileName = UUID.randomUUID() + "_" + safeFilename;
-
-            Path filePath = Paths.get(UPLOAD_DIR + fileName);
-            Files.write(filePath, imageFile.getBytes());
-
-            String webPath = "/uploads/products/" + fileName;
-            product.setImageUrl(webPath);
-            System.out.println("DEBUG: Saved image = " + webPath);
-            System.out.println("DEBUG: Full path  = " + filePath.toAbsolutePath());
+            String imageUrl = cloudinaryService.uploadImage(imageFile);
+            product.setImageUrl(imageUrl);
         }
 
         Product saved = productRepository.save(product);
@@ -114,19 +88,12 @@ public class AdminController {
         product.setCategory(updatedProduct.getCategory());
         product.setStock(updatedProduct.getStock());
 
-        // Only update image if a new one was uploaded
         if (!imageFile.isEmpty()) {
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-
-            String originalFilename = imageFile.getOriginalFilename();
-            if (originalFilename == null || originalFilename.isEmpty()) originalFilename = "image";
-            String safeFilename = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
-            String fileName = UUID.randomUUID() + "_" + safeFilename;
-
-            Path filePath = Paths.get(UPLOAD_DIR + fileName);
-            Files.write(filePath, imageFile.getBytes());
-            product.setImageUrl("/uploads/products/" + fileName);
+            // Delete old image from Cloudinary
+            cloudinaryService.deleteImage(product.getImageUrl());
+            // Upload new image to Cloudinary
+            String imageUrl = cloudinaryService.uploadImage(imageFile);
+            product.setImageUrl(imageUrl);
         }
 
         productRepository.save(product);
@@ -134,11 +101,13 @@ public class AdminController {
         return "redirect:/admin/products";
     }
 
-     @PostMapping("/products/delete/{id}")
+    @PostMapping("/products/delete/{id}")
     public String deleteProduct(@PathVariable long id, RedirectAttributes redirectAttributes) {
         try {
             Product product = productRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            // Delete image from Cloudinary
+            cloudinaryService.deleteImage(product.getImageUrl());
             product.setDeleted(true);
             productRepository.save(product);
             redirectAttributes.addFlashAttribute("message", "Product removed successfully!");
@@ -147,7 +116,6 @@ public class AdminController {
         }
         return "redirect:/admin/products";
     }
-
 
     // ───── Orders ─────
 
