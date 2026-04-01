@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/api/v2/auth/**",   // login, register
                      "/api/products",
-                     "/api/cart/debug", 
+                     "/api/cart/debug",
+                     "/ping", 
                     "/login",
                     "/register",
                     "/css/**",
@@ -66,7 +67,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .permitAll()
-                .defaultSuccessUrl("/dashboard", true)
+                .defaultSuccessUrl("/admin/products", true)
             )
 
             .logout(logout -> logout
