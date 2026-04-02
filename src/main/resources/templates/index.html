@@ -1,96 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBake – Fresh Treats Daily</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartBake – Fresh Treats Daily</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
-    <!-- Hero Section – using your croissant image as hero -->
-    <section class="hero bg-image" style="background-image: url('/images/croissants.jpg');">
-        <div class="hero-content animate-fade">
-            <h1>Freshly Baked Happiness</h1>
-            <p>Handcrafted treats made with love — delivered straight to your door or ready for pickup.</p>
-            <div class="cta-buttons">
-                <a href="/products" class="btn btn-hero btn-primary">Browse Treats</a>
-                <a href="/cart" class="btn btn-hero btn-outline">View Cart</a>
-            </div>
+ 
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">SMART<span>BAKE</span></div>
+    <div class="navbar-actions">
+      <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+    </div>
+  </nav>
+ 
+  <!-- Hero -->
+  <section class="hero bg-image" style="background-image:url('/images/croissants.jpg');">
+    <div class="hero-content">
+      <div class="hero-eyebrow fade-up">🧁 Nairobi's Favourite Bakery</div>
+      <h1 class="fade-up delay-1">Baked with <em>Love</em>,<br>Delivered with Care</h1>
+      <p class="fade-up delay-2">Handcrafted treats made fresh every morning. Order online and pick up at your convenience.</p>
+      <div class="cta-buttons fade-up delay-3">
+        <a href="/products" class="btn btn-primary">Browse Treats</a>
+        <a href="/register" class="btn btn-ghost">Create Account</a>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- Featured -->
+  <section class="featured">
+    <div class="container">
+      <div class="section-header">
+        <h2>Our Best Sellers</h2>
+        <p>Made fresh every morning — get yours before they're gone</p>
+      </div>
+      <div class="product-grid">
+        <div class="product-card fade-up">
+          <img src="/images/macarons.jpg" alt="Macarons" class="product-img">
+          <div class="product-body">
+            <div class="product-name">Assorted Macarons</div>
+            <div class="product-price">KES 1,200</div>
+            <a href="/products" class="btn btn-primary btn-sm">Order Now</a>
+          </div>
         </div>
-    </section>
-
-    <!-- Featured Treats – using your other images -->
-    <section class="featured">
-        <div class="container">
-            <h2>Our Best Sellers</h2>
-            <div class="product-grid">
-                <!-- Macarons -->
-                <div class="product-card animate-fade">
-                    <img src="/images/macarons.jpg" alt="Assorted Macarons" class="product-img">
-                    <div class="product-info">
-                        <h3>Assorted Macarons (6pc)</h3>
-                        <p class="price">KES 1,200</p>
-                        <a href="/products/macarons" class="btn btn-primary">Add to Cart</a>
-                    </div>
-                </div>
-
-                <!-- Donuts -->
-                <div class="product-card animate-fade">
-                    <img src="/images/donuts.jpg" alt="Glazed Donuts" class="product-img">
-                    <div class="product-info">
-                        <h3>Glazed Donuts (6pc)</h3>
-                        <p class="price">KES 650</p>
-                        <a href="/products/donuts" class="btn btn-primary">Add to Cart</a>
-                    </div>
-                </div>
-
-                <!-- Chocolate Cupcakes -->
-                <div class="product-card animate-fade">
-                    <img src="/images/cupcakes.jpg" alt="Chocolate Cupcakes" class="product-img">
-                    <div class="product-info">
-                        <h3>Chocolate Cupcakes (4pc)</h3>
-                        <p class="price">KES 800</p>
-                        <a href="/products/cupcakes" class="btn btn-primary">Add to Cart</a>
-                    </div>
-                </div>
-
-                <!-- Fruit Tartlets -->
-                <div class="product-card animate-fade">
-                    <img src="/images/tartlets.jpg" alt="Berry Tartlets" class="product-img">
-                    <div class="product-info">
-                        <h3>Berry Tartlets (4pc)</h3>
-                        <p class="price">KES 950</p>
-                        <a href="/products/tartlets" class="btn btn-primary">Add to Cart</a>
-                    </div>
-                </div>
-            </div>
+        <div class="product-card fade-up delay-1">
+          <img src="/images/donuts.jpg" alt="Donuts" class="product-img">
+          <div class="product-body">
+            <div class="product-name">Glazed Donuts (6pc)</div>
+            <div class="product-price">KES 650</div>
+            <a href="/products" class="btn btn-primary btn-sm">Order Now</a>
+          </div>
         </div>
-    </section>
-
-    <!-- Quick Links / Footer Teaser -->
-    <section style="padding: 4rem 0; text-align: center; background: var(--bg-card);">
-        <h2>Ready for Something Sweet?</h2>
-        <p style="font-size: 1.3rem; margin: 1.5rem 0; color: var(--text-secondary);">
-            Order now and taste the difference.
-        </p>
-        <a href="/products" class="btn btn-hero btn-primary">Shop Now</a>
-    </section>
-
-    <script>
-        // Trigger fade-in on scroll/load
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.animate-fade').forEach((el, index) => {
-                el.style.opacity = '0';
-                el.style.transition = 'opacity 1s ease, transform 1s ease';
-                setTimeout(() => {
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, index * 150 + 200);
-            });
-        });
-    </script>
-
+        <div class="product-card fade-up delay-2">
+          <img src="/images/cupcakes.jpg" alt="Cupcakes" class="product-img">
+          <div class="product-body">
+            <div class="product-name">Chocolate Cupcakes (4pc)</div>
+            <div class="product-price">KES 800</div>
+            <a href="/products" class="btn btn-primary btn-sm">Order Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready for Something Sweet?</h2>
+    <p>Order now and taste the difference. Pick up same day!</p>
+    <a href="/register" class="btn btn-gold">Start Your Order →</a>
+  </section>
+ 
 </body>
 </html>
