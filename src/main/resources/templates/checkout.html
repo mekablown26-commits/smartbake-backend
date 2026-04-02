@@ -4,81 +4,226 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout – SmartBake</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+ 
+    body {
+      font-family:'DM Sans',sans-serif;
+      min-height:100vh;
+      background:#0f0d0b;
+      color:#e8ddd0;
+      -webkit-font-smoothing:antialiased;
+    }
+ 
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem;
+      background:rgba(15,13,11,0.96);
+      -webkit-backdrop-filter:blur(20px);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(196,130,60,0.18);
+      position:sticky; top:0; z-index:100;
+    }
+    .brand { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:#f5ede0; letter-spacing:0.05em; }
+    .brand span { color:#e8b84b; }
+    .btn-ghost-nav {
+      color:#9a8e82; font-size:0.875rem; font-weight:500;
+      padding:0.45rem 1rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.08);
+      text-decoration:none; transition:color 0.2s,border-color 0.2s;
+    }
+    .btn-ghost-nav:hover { color:#e8b84b; border-color:rgba(196,130,60,0.3); }
+ 
+    .page-header { text-align:center; padding:2.5rem 1.5rem 1.5rem; }
+    .page-header h1 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,4vw,2.75rem);
+      color:#f5ede0;
+      animation:fadeUp 0.5s ease both;
+    }
+    .page-header p { color:#7a6e66; margin-top:0.4rem; animation:fadeUp 0.5s 0.1s ease both; }
+ 
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .checkout-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.75rem;
+      max-width:980px;
+      margin:1.5rem auto 4rem;
+      padding:0 1.5rem;
+    }
+    @media (max-width:720px) { .checkout-grid { grid-template-columns:1fr; } }
+ 
+    .panel {
+      background:#1a1612;
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:20px;
+      padding:1.75rem;
+      animation:fadeUp 0.5s ease both;
+    }
+    .panel:nth-child(2) { animation-delay:0.1s; }
+ 
+    .panel-title {
+      font-family:'Playfair Display',serif;
+      font-size:1.2rem;
+      color:#f5ede0;
+      margin-bottom:1.25rem;
+      padding-bottom:0.75rem;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+ 
+    /* Table */
+    table { width:100%; border-collapse:collapse; font-size:0.875rem; }
+    thead th {
+      color:#e8b84b;
+      font-size:0.73rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      padding:0.65rem 0.75rem;
+      border-bottom:1px solid rgba(196,130,60,0.18);
+    }
+    tbody td {
+      padding:0.75rem;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      color:#e8ddd0;
+    }
+    tbody tr:last-child td { border-bottom:none; }
+    .subtotal-cell { color:#e8b84b; font-weight:700; }
+    .total-row td {
+      background:rgba(200,146,42,0.08);
+      color:#e8b84b !important;
+      font-weight:700;
+      border-top:1px solid rgba(196,130,60,0.18);
+      font-size:0.95rem;
+    }
+ 
+    /* Form */
+    .form { display:flex; flex-direction:column; gap:1rem; }
+    .field { display:flex; flex-direction:column; gap:0.35rem; }
+    label {
+      font-size:0.77rem; font-weight:600;
+      color:#8a7e76; text-transform:uppercase; letter-spacing:0.07em;
+    }
+    input, textarea, select {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      padding:0.75rem 1rem;
+      color:#e8ddd0;
+      font-family:'DM Sans',sans-serif;
+      font-size:0.9rem;
+      outline:none;
+      width:100%;
+      transition:border-color 0.22s, box-shadow 0.22s, background 0.22s;
+    }
+    input::placeholder, textarea::placeholder { color:#4a4038; }
+    input:focus, textarea:focus, select:focus {
+      border-color:#c8922a;
+      background:rgba(200,146,42,0.06);
+      box-shadow:0 0 0 3px rgba(200,146,42,0.14);
+    }
+    textarea { resize:vertical; min-height:75px; }
+    select { cursor:pointer; }
+    select option { background:#1a1612; }
+ 
+    .btn-submit {
+      width:100%;
+      margin-top:0.5rem;
+      padding:0.9rem;
+      background:linear-gradient(135deg,#c43050,#9e1f3b);
+      color:#fff;
+      border:none;
+      border-radius:999px;
+      font-family:'DM Sans',sans-serif;
+      font-size:0.95rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 4px 20px rgba(196,48,80,0.38);
+      transition:transform 0.22s, box-shadow 0.22s;
+    }
+    .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(196,48,80,0.55); }
+    .btn-submit:active { transform:scale(0.98); }
+ 
+    @media (max-width:768px) {
+      nav { padding:0.85rem 1.25rem; }
+      .checkout-grid { padding:0 1rem; }
+      .panel { padding:1.25rem; }
+    }
+  </style>
 </head>
 <body>
  
-  <nav class="navbar">
-    <div class="navbar-brand">SMART<span>BAKE</span></div>
-    <div class="navbar-actions">
-      <a href="/cart" class="btn btn-ghost btn-sm">← Back to Cart</a>
-    </div>
+  <nav>
+    <div class="brand">SMART<span>BAKE</span></div>
+    <a href="/cart" class="btn-ghost-nav">← Back to Cart</a>
   </nav>
  
   <div class="page-header">
-    <h1 class="fade-up">Checkout 🍰</h1>
-    <p class="fade-up delay-1">Almost there — just confirm your details</p>
+    <h1>Checkout 🍰</h1>
+    <p>Almost there — just confirm your details</p>
   </div>
  
   <div class="checkout-grid">
  
     <!-- Order Summary -->
-    <div class="card fade-up" style="padding:1.75rem;">
-      <h3 style="color:var(--cream);margin-bottom:1.25rem;">Order Summary</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Qty</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="item : ${cartItems}">
-              <td th:text="${item.product.name}"></td>
-              <td th:text="${item.quantity}"></td>
-              <td style="color:var(--gold);font-weight:600;" th:text="${item.subtotal} + ' KSh'"></td>
-            </tr>
-            <tr class="total-row">
-              <td colspan="2">Total</td>
-              <td th:text="${total} + ' KSh'"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="panel">
+      <div class="panel-title">Order Summary</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="item : ${cartItems}">
+            <td th:text="${item.product.name}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td class="subtotal-cell" th:text="${item.subtotal} + ' KSh'"></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2">Total</td>
+            <td th:text="${total} + ' KSh'"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
  
     <!-- Details form -->
-    <div class="card fade-up delay-1" style="padding:1.75rem;">
-      <h3 style="color:var(--cream);margin-bottom:1.25rem;">Your Details</h3>
-      <form th:action="@{/cart/checkout}" method="post" style="display:flex;flex-direction:column;gap:1rem;">
-        <div class="form-group">
-          <label class="form-label">Full Name *</label>
-          <input class="form-input" type="text" name="customerName" placeholder="Jane Wanjiku" required>
+    <div class="panel">
+      <div class="panel-title">Your Details</div>
+      <form th:action="@{/cart/checkout}" method="post" class="form">
+        <div class="field">
+          <label>Full Name *</label>
+          <input type="text" name="customerName" placeholder="Jane Wanjiku" required>
         </div>
-        <div class="form-group">
-          <label class="form-label">Phone Number *</label>
-          <input class="form-input" type="tel" name="customerPhone" placeholder="07XX XXX XXX" required>
+        <div class="field">
+          <label>Phone Number *</label>
+          <input type="tel" name="customerPhone" placeholder="07XX XXX XXX" required>
         </div>
-        <div class="form-group">
-          <label class="form-label">Delivery / Pickup Location</label>
-          <textarea class="form-input" name="deliveryAddress" rows="2" placeholder="Address or preferred pickup point"></textarea>
+        <div class="field">
+          <label>Delivery / Pickup Location</label>
+          <textarea name="deliveryAddress" placeholder="Address or preferred pickup point"></textarea>
         </div>
-        <div class="form-group">
-          <label class="form-label">Special Notes</label>
-          <textarea class="form-input" name="notes" rows="2" placeholder="e.g. Add candles, no nuts, etc."></textarea>
+        <div class="field">
+          <label>Special Notes</label>
+          <textarea name="notes" placeholder="e.g. Add candles, no nuts, etc."></textarea>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="paymentMethod">Payment Method *</label>
-          <select class="form-input" id="paymentMethod" name="paymentMethod" title="Payment Method" required>
+        <div class="field">
+          <label for="paymentMethod">Payment Method *</label>
+          <select id="paymentMethod" name="paymentMethod" required>
             <option value="CASH">💵 Cash on Pickup / Delivery</option>
             <option value="PAYBILL">📱 M-Pesa Paybill</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top:0.5rem;">
-          ✅ Confirm & Place Order
-        </button>
+        <button type="submit" class="btn-submit">✅ Confirm &amp; Place Order</button>
       </form>
     </div>
  

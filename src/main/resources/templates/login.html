@@ -4,13 +4,158 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In – SmartBake</title>
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body class="auth-page bg-image" style="background-image:url('/images/croissants.jpg');">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  
-  <div class="auth-card fade-up">
-    <div class="auth-logo">SMART<span>BAKE</span></div>
-    <p class="auth-subtitle">Welcome back — your treats await 🥐</p>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: #0f0d0b url('/images/croissants.jpg') center/cover fixed no-repeat;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(10,7,5,0.88) 0%, rgba(15,10,8,0.75) 100%);
+      z-index: 0;
+    }
+ 
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(20,16,12,0.92);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(196,130,60,0.2);
+      border-radius: 24px;
+      padding: 2.75rem 2.25rem;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(196,130,60,0.08);
+      animation: slideUp 0.55s cubic-bezier(0.4,0,0.2,1) both;
+    }
+ 
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(28px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #f5ede0;
+      text-align: center;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.3rem;
+    }
+    .brand span { color: #e8b84b; }
+ 
+    .tagline {
+      text-align: center;
+      color: #7a6e66;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+ 
+    .alert {
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .alert-error   { background: rgba(185,28,28,0.15); border: 1px solid rgba(185,28,28,0.35); color: #fca5a5; }
+    .alert-success { background: rgba(22,163,74,0.15); border: 1px solid rgba(22,163,74,0.3);  color: #86efac; }
+ 
+    .form { display: flex; flex-direction: column; gap: 1rem; }
+ 
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+ 
+    label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #8a7e76;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+ 
+    input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      color: #e8ddd0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      width: 100%;
+    }
+    input::placeholder { color: #4a4038; }
+    input:focus {
+      border-color: #c8922a;
+      background: rgba(200,146,42,0.06);
+      box-shadow: 0 0 0 3px rgba(200,146,42,0.14);
+    }
+ 
+    .btn-submit {
+      margin-top: 0.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #c43050 0%, #9e1f3b 100%);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: transform 0.22s, box-shadow 0.22s;
+      box-shadow: 0 4px 20px rgba(196,48,80,0.4);
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(196,48,80,0.55);
+    }
+    .btn-submit:active { transform: scale(0.98); }
+ 
+    .footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6a5e56;
+    }
+    .footer a { color: #e8b84b; font-weight: 600; text-decoration: none; }
+    .footer a:hover { color: #c8922a; }
+ 
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0.25rem 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+    .divider span { color: #4a4038; font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+ 
+  <div class="card">
+    <div class="brand">SMART<span>BAKE</span></div>
+    <p class="tagline">Welcome back — your treats await 🥐</p>
  
     <div th:if="${param.error}" class="alert alert-error">
       ⚠️ Invalid email or password. Please try again.
@@ -19,19 +164,19 @@
       ✅ You've been logged out successfully.
     </div>
  
-    <form th:action="@{/login}" method="post" class="auth-form">
-      <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input class="form-input" type="email" name="username" placeholder="you@example.com" required autofocus>
+    <form th:action="@{/login}" method="post" class="form">
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" name="username" placeholder="you@example.com" required autofocus>
       </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" type="password" name="password" placeholder="••••••••" required>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="••••••••" required>
       </div>
-      <button type="submit" class="btn btn-primary btn-block" style="margin-top:0.5rem;">Sign In</button>
+      <button type="submit" class="btn-submit">Sign In →</button>
     </form>
  
-    <div class="auth-footer">
+    <div class="footer">
       Don't have an account? <a href="/register">Create one →</a>
     </div>
   </div>

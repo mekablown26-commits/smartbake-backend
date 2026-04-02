@@ -4,48 +4,137 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact – SmartBake</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'DM Sans',sans-serif;
+      min-height:100vh;
+      background:#0f0d0b;
+      color:#e8ddd0;
+      display:flex;
+      flex-direction:column;
+      -webkit-font-smoothing:antialiased;
+    }
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem;
+      background:rgba(15,13,11,0.96);
+      -webkit-backdrop-filter:blur(20px);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(196,130,60,0.18);
+    }
+    .brand { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:#f5ede0; letter-spacing:0.05em; }
+    .brand span { color:#e8b84b; }
+    .btn-ghost-nav {
+      color:#9a8e82; font-size:0.875rem; font-weight:500;
+      padding:0.45rem 1rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.08);
+      text-decoration:none; transition:color 0.2s,border-color 0.2s;
+    }
+    .btn-ghost-nav:hover { color:#e8b84b; border-color:rgba(196,130,60,0.3); }
+ 
+    .page-header { text-align:center; padding:3rem 1.5rem 2rem; }
+    .page-header h1 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,4vw,2.75rem);
+      color:#f5ede0;
+      margin-bottom:0.4rem;
+      animation:fadeUp 0.5s ease both;
+    }
+    .page-header p { color:#7a6e66; animation:fadeUp 0.5s 0.1s ease both; }
+ 
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .container { max-width:480px; margin:0 auto; padding:1rem 1.5rem 4rem; }
+ 
+    .card {
+      background:#1a1612;
+      border:1px solid rgba(196,130,60,0.2);
+      border-radius:24px;
+      padding:2.5rem;
+      box-shadow:0 24px 60px rgba(0,0,0,0.55);
+      animation:fadeUp 0.5s 0.15s ease both;
+    }
+ 
+    .intro { color:#7a6e66; font-size:0.95rem; line-height:1.7; margin-bottom:1.75rem; }
+ 
+    .phone-link {
+      display:block;
+      font-family:'Playfair Display',serif;
+      font-size:2rem;
+      font-weight:700;
+      color:#e8b84b;
+      text-align:center;
+      text-decoration:none;
+      margin-bottom:1.5rem;
+      letter-spacing:0.04em;
+      transition:color 0.2s, text-shadow 0.2s;
+    }
+    .phone-link:hover {
+      color:#c8922a;
+      text-shadow:0 0 24px rgba(200,146,42,0.35);
+    }
+ 
+    .btn-whatsapp {
+      display:flex; align-items:center; justify-content:center; gap:0.5rem;
+      width:100%;
+      padding:0.9rem;
+      background:linear-gradient(135deg,#25d366,#128c7e);
+      color:#fff;
+      border:none; border-radius:999px;
+      font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:700;
+      text-decoration:none; cursor:pointer;
+      box-shadow:0 4px 18px rgba(37,211,102,0.32);
+      transition:transform 0.22s,box-shadow 0.22s;
+      margin-bottom:1.75rem;
+    }
+    .btn-whatsapp:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(37,211,102,0.45); color:#fff; }
+ 
+    .info { color:#7a6e66; font-size:0.875rem; line-height:1.9; margin-bottom:1.75rem; }
+ 
+    .btn-back {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.55rem 1.25rem; border-radius:999px;
+      font-size:0.83rem; font-weight:600;
+      color:#9a8e82; border:1px solid rgba(255,255,255,0.08);
+      text-decoration:none; transition:color 0.2s,border-color 0.2s;
+    }
+    .btn-back:hover { color:#e8b84b; border-color:rgba(196,130,60,0.3); }
+  </style>
 </head>
 <body>
  
-  <nav class="navbar">
-    <div class="navbar-brand">SMART<span>BAKE</span></div>
-    <div class="navbar-actions">
-      <a href="/dashboard" class="btn btn-ghost btn-sm">← Dashboard</a>
-    </div>
+  <nav>
+    <div class="brand">SMART<span>BAKE</span></div>
+    <a href="/dashboard" class="btn-ghost-nav">← Dashboard</a>
   </nav>
  
   <div class="page-header">
-    <h1 class="fade-up">Contact Us 📞</h1>
-    <p class="fade-up delay-1">We're always happy to help</p>
+    <h1>Contact Us 📞</h1>
+    <p>We're always happy to help</p>
   </div>
  
   <div class="container">
-    <div class="contact-card card fade-up">
-      <p style="color:var(--text-muted);font-size:1.0625rem;margin-bottom:1.5rem;">
-        Call or WhatsApp us anytime — we're available 7 AM to 10 PM daily.
-      </p>
+    <div class="card">
+      <p class="intro">Call or WhatsApp us anytime — we're available 7 AM to 10 PM daily.</p>
  
-      <a th:href="@{'tel:' + ${contactPhone}}"
-         class="phone-display"
-         th:text="${contactPhone}">0712345678</a>
+      <a th:href="@{'tel:' + ${contactPhone}}" class="phone-link" th:text="${contactPhone}">0712 345 678</a>
  
-      <a th:href="${whatsappLink}"
-         target="_blank"
-         class="btn btn-whatsapp btn-block"
-         style="margin-bottom:1.5rem;">
+      <a th:href="${whatsappLink}" target="_blank" class="btn-whatsapp">
         💬 Chat on WhatsApp
       </a>
  
-      <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
+      <p class="info">
         🕐 Available 7 AM – 10 PM daily<br>
         📍 123 Bakery Lane, Westlands, Nairobi<br>
         ✉️ smartbakei.a.n@gmail.com
       </p>
  
-      <div style="margin-top:2rem;">
-        <a href="/dashboard" class="btn btn-ghost btn-sm">← Back to Dashboard</a>
-      </div>
+      <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
     </div>
   </div>
  

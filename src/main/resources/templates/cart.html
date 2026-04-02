@@ -4,26 +4,157 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Cart – SmartBake</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+ 
+    body {
+      font-family:'DM Sans',sans-serif;
+      min-height:100vh;
+      background:#0f0d0b;
+      color:#e8ddd0;
+      -webkit-font-smoothing:antialiased;
+    }
+ 
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem;
+      background:rgba(15,13,11,0.96);
+      -webkit-backdrop-filter:blur(20px);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(196,130,60,0.18);
+      position:sticky; top:0; z-index:100;
+    }
+    .brand { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:#f5ede0; letter-spacing:0.05em; }
+    .brand span { color:#e8b84b; }
+ 
+    .btn-ghost-nav {
+      color:#9a8e82; font-size:0.875rem; font-weight:500;
+      padding:0.45rem 1rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.08);
+      text-decoration:none; transition:color 0.2s,border-color 0.2s;
+    }
+    .btn-ghost-nav:hover { color:#e8b84b; border-color:rgba(196,130,60,0.3); }
+ 
+    .page-header {
+      text-align:center;
+      padding:3rem 1.5rem 2rem;
+    }
+    .page-header h1 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,4vw,3rem);
+      color:#f5ede0;
+      animation:fadeUp 0.5s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .container { max-width:1000px; margin:0 auto; padding:0 1.5rem 4rem; }
+ 
+    /* ── Empty state ── */
+    .empty-state { text-align:center; padding:5rem 2rem; animation:fadeUp 0.5s ease both; }
+    .empty-state .icon { font-size:3.5rem; margin-bottom:1rem; }
+    .empty-state h3 { font-family:'Playfair Display',serif; font-size:1.4rem; color:#f5ede0; margin-bottom:0.5rem; }
+    .empty-state p  { color:#7a6e66; margin-bottom:1.75rem; }
+ 
+    /* ── Table card ── */
+    .cart-card {
+      background:#1a1612;
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:20px;
+      overflow:hidden;
+      animation:fadeUp 0.5s ease both;
+    }
+ 
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+ 
+    thead th {
+      background:rgba(200,146,42,0.1);
+      color:#e8b84b;
+      font-size:0.75rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      padding:1rem 1.25rem;
+      border-bottom:1px solid rgba(196,130,60,0.2);
+      white-space:nowrap;
+    }
+    tbody td {
+      padding:1rem 1.25rem;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      vertical-align:middle;
+    }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:rgba(255,255,255,0.02); }
+ 
+    .product-thumb {
+      width:54px; height:54px;
+      object-fit:cover;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .product-cell { display:flex; align-items:center; gap:0.85rem; }
+    .product-cell span { font-weight:600; color:#f5ede0; }
+ 
+    .subtotal-cell { color:#e8b84b; font-weight:700; }
+ 
+    .total-row td {
+      background:rgba(200,146,42,0.08) !important;
+      color:#e8b84b !important;
+      font-weight:700 !important;
+      font-size:1rem;
+      border-top:1px solid rgba(196,130,60,0.2);
+    }
+ 
+    /* ── Buttons ── */
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:0.55rem 1.25rem; border-radius:999px;
+      font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600;
+      cursor:pointer; border:none; text-decoration:none;
+      transition:transform 0.2s, box-shadow 0.2s;
+      white-space:nowrap;
+    }
+    .btn-primary { background:linear-gradient(135deg,#c43050,#9e1f3b); color:#fff; box-shadow:0 4px 14px rgba(196,48,80,0.32); }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(196,48,80,0.5); color:#fff; }
+    .btn-ghost { background:transparent; color:#e8ddd0; border:1px solid rgba(196,130,60,0.25); }
+    .btn-ghost:hover { border-color:#e8b84b; color:#e8b84b; }
+    .btn-danger { background:linear-gradient(135deg,#b91c1c,#991b1b); color:#fff; box-shadow:0 4px 10px rgba(185,28,28,0.3); }
+    .btn-danger:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(185,28,28,0.45); color:#fff; }
+    .btn-sm { padding:0.38rem 0.9rem; font-size:0.78rem; }
+ 
+    .actions {
+      display:flex; gap:0.75rem; justify-content:flex-end;
+      margin-top:1.5rem; flex-wrap:wrap;
+      animation:fadeUp 0.5s 0.1s ease both;
+    }
+ 
+    @media (max-width:768px) {
+      nav { padding:0.85rem 1.25rem; }
+      .container { padding:0 1rem 3rem; }
+      thead th, tbody td { padding:0.85rem 0.9rem; }
+    }
+  </style>
 </head>
 <body>
  
-  <nav class="navbar">
-    <div class="navbar-brand">SMART<span>BAKE</span></div>
-    <div class="navbar-actions">
-      <a href="/products" class="btn btn-ghost btn-sm">← Keep Shopping</a>
-    </div>
+  <nav>
+    <div class="brand">SMART<span>BAKE</span></div>
+    <a href="/products" class="btn-ghost-nav">← Keep Shopping</a>
   </nav>
  
   <div class="page-header">
-    <h1 class="fade-up">Your Cart 🛒</h1>
+    <h1>Your Cart 🛒</h1>
   </div>
  
-  <div class="container section">
+  <div class="container">
  
-    <!-- Empty cart -->
-    <div th:if="${cartItems.empty}" class="empty-state fade-up">
-      <div class="empty-state-icon">🛒</div>
+    <!-- Empty -->
+    <div th:if="${cartItems.empty}" class="empty-state">
+      <div class="icon">🛒</div>
       <h3>Your cart is empty</h3>
       <p>Looks like you haven't added any treats yet!</p>
       <a href="/products" class="btn btn-primary">Browse Treats</a>
@@ -31,7 +162,7 @@
  
     <!-- Cart contents -->
     <div th:unless="${cartItems.empty}">
-      <div class="order-table-card fade-up">
+      <div class="cart-card">
         <div class="table-wrap">
           <table>
             <thead>
@@ -46,19 +177,17 @@
             <tbody>
               <tr th:each="item : ${cartItems}">
                 <td>
-                  <div style="display:flex;align-items:center;gap:0.875rem;">
+                  <div class="product-cell">
                     <img th:src="${item.product.imageUrl} ?: '/images/placeholder-treat.jpg'"
                          th:alt="${item.product.name}"
-                         th:title="${item.product.name}"
-                         alt="Product image"
-                         title="Product image"
-                         style="width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid var(--border);">
-                    <span style="font-weight:600;" th:text="${item.product.name}"></span>
+                         alt="Product"
+                         class="product-thumb">
+                    <span th:text="${item.product.name}"></span>
                   </div>
                 </td>
                 <td th:text="${item.product.price} + ' KSh'"></td>
                 <td th:text="${item.quantity}"></td>
-                <td style="color:var(--gold);font-weight:600;" th:text="${item.subtotal} + ' KSh'"></td>
+                <td class="subtotal-cell" th:text="${item.subtotal} + ' KSh'"></td>
                 <td>
                   <form th:action="@{/cart/remove/{id}(id=${item.product.id})}" method="post">
                     <button type="submit" class="btn btn-danger btn-sm">Remove</button>
@@ -74,7 +203,7 @@
         </div>
       </div>
  
-      <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1.5rem;flex-wrap:wrap;">
+      <div class="actions">
         <form th:action="@{/cart/clear}" method="post">
           <button type="submit" class="btn btn-danger">Clear Cart</button>
         </form>

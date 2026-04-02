@@ -4,15 +4,236 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard – SmartBake</title>
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body class="dashboard-page">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  
-  <!-- Top nav -->
-  <nav class="navbar">
-    <div class="navbar-brand">SMART<span>BAKE</span></div>
-    <div class="navbar-actions">
-      <a href="/cart" class="cart-link">
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: #0f0d0b;
+      color: #e8ddd0;
+      -webkit-font-smoothing: antialiased;
+    }
+ 
+    /* ── Navbar ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(15,13,11,0.96);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(196,130,60,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f5ede0;
+      letter-spacing: 0.05em;
+    }
+    .brand span { color: #e8b84b; }
+ 
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+ 
+    .cart-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #e8ddd0;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      text-decoration: none;
+      transition: border-color 0.22s, color 0.22s;
+    }
+    .cart-btn:hover { border-color: #e8b84b; color: #e8b84b; }
+ 
+    .cart-badge {
+      background: #c43050;
+      color: #fff;
+      border-radius: 50%;
+      min-width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+ 
+    .logout-btn {
+      background: transparent;
+      border: 1px solid rgba(185,28,28,0.35);
+      color: #fca5a5;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.22s, border-color 0.22s;
+    }
+    .logout-btn:hover { background: rgba(185,28,28,0.15); border-color: #ef4444; }
+ 
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      padding: 3.5rem 1.5rem 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      color: #f5ede0;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.55s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(196,130,60,0.22);
+      border-radius: 999px;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.875rem;
+      color: #9a8e82;
+      animation: fadeUp 0.55s 0.1s ease both;
+    }
+    .user-chip strong { color: #e8ddd0; }
+    .role-pill {
+      background: linear-gradient(135deg, #c43050, #9e1f3b);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.15rem 0.65rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+ 
+    /* ── Cards grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+ 
+    .ctrl-card {
+      display: flex;
+      flex-direction: column;
+      background: #1a1612;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 2rem;
+      text-decoration: none;
+      transition: transform 0.28s, border-color 0.28s, box-shadow 0.28s;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.55s ease both;
+    }
+    .ctrl-card:nth-child(2) { animation-delay: 0.1s; }
+    .ctrl-card:nth-child(3) { animation-delay: 0.2s; }
+ 
+    .ctrl-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(196,48,80,0.07), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.28s;
+    }
+    .ctrl-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(196,130,60,0.3);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .ctrl-card:hover::after { opacity: 1; }
+ 
+    .ctrl-icon  { font-size: 2.25rem; margin-bottom: 0.75rem; }
+    .ctrl-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: #f5ede0;
+      margin-bottom: 0.4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .ctrl-desc {
+      font-size: 0.85rem;
+      color: #7a6e66;
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 1.25rem;
+      position: relative;
+      z-index: 1;
+    }
+ 
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.55rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      z-index: 1;
+      align-self: flex-start;
+    }
+    .btn-primary { background: linear-gradient(135deg,#c43050,#9e1f3b); color:#fff; box-shadow:0 4px 14px rgba(196,48,80,0.35); }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(196,48,80,0.5); color:#fff; }
+    .btn-ghost   { background:transparent; color:#e8ddd0; border:1px solid rgba(196,130,60,0.25); }
+    .btn-ghost:hover { border-color:#e8b84b; color:#e8b84b; }
+    .btn-gold    { background:linear-gradient(135deg,#c8922a,#e8b84b); color:#1a1000; font-weight:700; }
+    .btn-gold:hover { transform:translateY(-2px); color:#1a1000; }
+ 
+    /* ── Footer links ── */
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 1rem;
+    }
+    .footer-links a { color: #7a6e66; font-size: 0.875rem; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: #e8b84b; }
+ 
+    @media (max-width: 768px) {
+      nav { padding: 0.85rem 1.25rem; }
+      .grid { padding: 0 1rem; gap: 1rem; }
+      .header { padding: 2.5rem 1rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <nav>
+    <div class="brand">SMART<span>BAKE</span></div>
+    <div class="nav-right">
+      <a href="/cart" class="cart-btn">
         🛒 Cart
         <span th:if="${session.cart != null and !session.cart.empty}" class="cart-badge" th:text="${session.cart.size()}"></span>
       </a>
@@ -22,63 +243,61 @@
     </div>
   </nav>
  
-  <!-- Header -->
-  <div class="dashboard-header">
-    <h1 class="fade-up" style="color:var(--cream);">
+  <div class="header">
+    <h1>
       <span th:if="${role == 'ADMIN'}">⚙️ Admin Dashboard</span>
       <span th:if="${role == 'CUSTOMER'}">Welcome back 👋</span>
     </h1>
-    <div class="user-chip fade-up delay-1">
+    <div class="user-chip">
       <span>Logged in as <strong th:text="${username}"></strong></span>
-      <span class="role-badge" th:text="${role}"></span>
+      <span class="role-pill" th:text="${role}"></span>
     </div>
   </div>
  
-  <!-- Admin Controls -->
+  <!-- Admin -->
   <div th:if="${role == 'ADMIN'}">
-    <div class="controls-grid">
-      <a href="/admin/products" class="control-card fade-up">
-        <div class="control-icon">🍰</div>
-        <div class="control-title">Manage Products</div>
-        <p class="control-desc">Add, edit, delete treats and update stock & prices</p>
-        <span class="btn btn-primary btn-sm">View & Manage</span>
+    <div class="grid">
+      <a href="/admin/products" class="ctrl-card">
+        <div class="ctrl-icon">🍰</div>
+        <div class="ctrl-title">Manage Products</div>
+        <p class="ctrl-desc">Add, edit, delete treats and update stock &amp; prices</p>
+        <span class="btn btn-primary">View &amp; Manage</span>
       </a>
-      <a href="/admin/orders" class="control-card fade-up delay-1">
-        <div class="control-icon">📦</div>
-        <div class="control-title">Manage Orders</div>
-        <p class="control-desc">View all orders, update status, track customers</p>
-        <span class="btn btn-primary btn-sm">View & Manage</span>
+      <a href="/admin/orders" class="ctrl-card">
+        <div class="ctrl-icon">📦</div>
+        <div class="ctrl-title">Manage Orders</div>
+        <p class="ctrl-desc">View all orders, update status, track customers</p>
+        <span class="btn btn-primary">View &amp; Manage</span>
       </a>
     </div>
   </div>
  
-  <!-- Customer Section -->
+  <!-- Customer -->
   <div th:if="${role == 'CUSTOMER'}">
-    <div class="controls-grid">
-      <a href="/products" class="control-card fade-up">
-        <div class="control-icon">🛍️</div>
-        <div class="control-title">Browse Treats</div>
-        <p class="control-desc">Explore our fresh daily selection of baked goods</p>
-        <span class="btn btn-primary btn-sm">Shop Now</span>
+    <div class="grid">
+      <a href="/products" class="ctrl-card">
+        <div class="ctrl-icon">🛍️</div>
+        <div class="ctrl-title">Browse Treats</div>
+        <p class="ctrl-desc">Explore our fresh daily selection of baked goods</p>
+        <span class="btn btn-primary">Shop Now</span>
       </a>
-      <a href="/my-orders" class="control-card fade-up delay-1">
-        <div class="control-icon">📋</div>
-        <div class="control-title">My Orders</div>
-        <p class="control-desc">Track your orders and view past purchases</p>
-        <span class="btn btn-ghost btn-sm">View Orders</span>
+      <a href="/my-orders" class="ctrl-card">
+        <div class="ctrl-icon">📋</div>
+        <div class="ctrl-title">My Orders</div>
+        <p class="ctrl-desc">Track your orders and view past purchases</p>
+        <span class="btn btn-ghost">View Orders</span>
       </a>
-      <a href="/cart" class="control-card fade-up delay-2">
-        <div class="control-icon">🛒</div>
-        <div class="control-title">My Cart</div>
-        <p class="control-desc">Review items and proceed to checkout</p>
-        <span class="btn btn-gold btn-sm">View Cart</span>
+      <a href="/cart" class="ctrl-card">
+        <div class="ctrl-icon">🛒</div>
+        <div class="ctrl-title">My Cart</div>
+        <p class="ctrl-desc">Review items and proceed to checkout</p>
+        <span class="btn btn-gold">View Cart</span>
       </a>
     </div>
   </div>
  
-  <!-- Footer links -->
-  <div class="dashboard-links">
-    <a href="/contact" style="color:var(--text-muted);font-size:0.9rem;">📞 Contact Us</a>
+  <div class="footer-links">
+    <a href="/contact">📞 Contact Us</a>
     <form th:action="@{/logout}" method="post" style="display:inline;">
       <button type="submit" class="logout-btn">🚪 Sign Out</button>
     </form>
