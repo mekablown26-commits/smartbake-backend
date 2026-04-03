@@ -38,7 +38,7 @@ public class AdminController {
 
     @GetMapping("/products")
     public String listProducts(Model model) {
-        model.addAttribute("products", productRepository.findByDeletedFalse());
+        model.addAttribute("products", productRepository.findAll()); // ✅ show ALL products
         return "admin/products";
     }
 

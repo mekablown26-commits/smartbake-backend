@@ -18,23 +18,16 @@ public class ProductController {
     // Customer: browse treats
     @GetMapping("/products")
     public String showCustomerProducts(Model model) {
-        List<Product> products = productService.findAllActive();  // ← changed from findAll()
+        List<Product> products = productService.findAllActive();
         model.addAttribute("products", products);
         return "products";
     }
 
-    // Admin: add product form (keep here or move to AdminController later)
+    // Admin: add product form
     @GetMapping("/admin/products/add")
     public String showAddProductForm(Model model) {
         model.addAttribute("product", new Product());
         return "admin/product-form";
     }
-    
-    // Admin: view all products (including soft-deleted ones)
-@GetMapping("/admin/products")
-public String showAdminProducts(Model model) {
-    List<Product> products = productService.findAll(); // findAll, not findAllActive
-    model.addAttribute("products", products);
-    return "admin/products"; // maps to templates/admin/products.html
-}
+
 }
