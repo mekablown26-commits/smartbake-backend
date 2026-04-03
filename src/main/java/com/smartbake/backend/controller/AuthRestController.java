@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v2/auth")
 public class AuthRestController {
 
     @GetMapping("/me")
@@ -30,23 +30,51 @@ public class AuthRestController {
         return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
     }
 
-    @Autowired
-    private com.smartbake.backend.service.UserService userService;
+   @Autowired
+private org.springframework.security.authentication.AuthenticationManager authenticationManager;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            String role = auth.getAuthorities().stream()
-                .findFirst().map(a -> a.getAuthority().replace("ROLE_",""))
-                .orElse("CUSTOMER");
-            return ResponseEntity.ok(Map.of("role", role, "email", auth.getName()));
-        }
-        return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+@Autowired
+private com.smartbake.backend.repository.UserRepository userRepository;
+
+@Autowired
+private com.smartbake.backend.service.UserService userService;
+
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody Map<String, String> body,
+                                HttpServletRequest request) {
+    try {
+        String username = body.get("username");
+        String password = body.get("password");
+
+        var token = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, password);
+        Authentication auth = authenticationManager.authenticate(token);
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        request.getSession(true).setAttribute(
+            "SPRING_SECURITY_CONTEXT_KEY",
+            SecurityContextHolder.getContext()
+        );
+
+        String role = auth.getAuthorities().stream()
+            .findFirst().map(a -> a.getAuthority().replace("ROLE_", ""))
+            .orElse("CUSTOMER");
+
+        // Get fullName from DB
+        String fullName = userRepository.findByEmail(username)
+            .map(u -> u.getName()).orElse("");
+
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "role", role,
+            "fullName", fullName
+        ));
+    } catch (Exception e) {
+        return ResponseEntity.status(401).body(Map.of(
+            "success", false,
+            "message", "Invalid email or password"
+        ));
     }
-
+}
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
         try {
