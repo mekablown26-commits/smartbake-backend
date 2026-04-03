@@ -1,223 +1,297 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Orders – SmartBake Admin</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
-        .admin-header h1 {
-            font-size: 2.8rem;
-            margin: 0;
-        }
-        .filter-controls {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            padding: 0.8rem 1.5rem;
-            background: rgba(233,30,99,0.12);
-            color: var(--accent-pink);
-            border: 1px solid rgba(233,30,99,0.3);
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .filter-btn:hover, .filter-btn.active {
-            background: var(--accent-pink);
-            color: white;
-            border-color: var(--accent-pink);
-        }
-        .search-container {
-            position: relative;
-            width: 320px;
-        }
-        .search-bar {
-            width: 100%;
-            padding: 0.9rem 1.5rem 0.9rem 3rem;
-            border-radius: 50px;
-            border: 1px solid #444;
-            background: #2a2a2a;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-        .search-bar:focus {
-            outline: none;
-            border-color: var(--accent-pink);
-            box-shadow: 0 0 0 4px rgba(233,30,99,0.2);
-        }
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 1.2rem;
-        }
-        .order-table-container {
-            background: var(--bg-card);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-bottom: 3rem;
-        }
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .order-table th {
-            background: rgba(233,30,99,0.15);
-            color: var(--accent-pink);
-            padding: 1.3rem 1.6rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        .order-table td {
-            padding: 1.3rem 1.6rem;
-            border-top: 1px solid #2a2a2a;
-        }
-        tr:hover {
-            background: rgba(233,30,99,0.08);
-            transition: background 0.2s;
-        }
-        .status-badge {
-            padding: 0.6rem 1.4rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: inline-block;
-        }
-        .action-btn {
-            color: var(--accent-gold);
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-        .action-btn:hover {
-            color: #ffe082;
-            text-decoration: underline;
-        }
-        .no-orders {
-            text-align: center;
-            padding: 5rem 2rem;
-            color: var(--text-muted);
-            font-size: 1.4rem;
-        }
-        .no-orders span {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 1rem;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Orders – SmartBake Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+ 
+    body {
+      font-family:'DM Sans',sans-serif;
+      min-height:100vh;
+      background:#0f0d0b url('/images/pastrey.jpg') center/cover fixed no-repeat;
+      color:#e8ddd0;
+      -webkit-font-smoothing:antialiased;
+      position:relative;
+    }
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background:linear-gradient(160deg,rgba(10,7,5,0.9) 0%,rgba(12,9,7,0.82) 100%);
+      z-index:0;
+    }
+    body > * { position:relative; z-index:1; }
+ 
+    /* ── Topbar ── */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem;
+      background:rgba(15,13,11,0.97);
+      -webkit-backdrop-filter:blur(20px);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(196,130,60,0.2);
+      position:sticky; top:0; z-index:100;
+      gap:1rem; flex-wrap:wrap;
+    }
+    .brand { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:#f5ede0; }
+    .brand span { color:#e8b84b; }
+ 
+    .btn {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      padding:0.48rem 1.1rem; border-radius:999px;
+      font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600;
+      cursor:pointer; border:none; text-decoration:none;
+      transition:transform 0.2s,box-shadow 0.2s;
+    }
+    .btn-ghost { background:transparent; color:#9a8e82; border:1px solid rgba(255,255,255,0.1); }
+    .btn-ghost:hover { border-color:rgba(196,130,60,0.3); color:#e8b84b; }
+    .btn-primary { background:linear-gradient(135deg,#c43050,#9e1f3b); color:#fff; box-shadow:0 4px 14px rgba(196,48,80,0.32); }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(196,48,80,0.5); color:#fff; }
+ 
+    /* ── Container ── */
+    .container { max-width:1200px; margin:2.5rem auto; padding:0 1.5rem 4rem; }
+ 
+    /* ── Header row ── */
+    .page-header {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:1.5rem; flex-wrap:wrap;
+      margin-bottom:2rem;
+      animation:fadeUp 0.5s ease both;
+    }
+    .page-header h1 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.75rem,4vw,2.75rem);
+      color:#f5ede0;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    /* ── Controls ── */
+    .controls {
+      display:flex; gap:1rem; flex-wrap:wrap; align-items:center;
+      animation:fadeUp 0.5s 0.08s ease both;
+    }
+ 
+    .search-wrap { position:relative; }
+    .search-input {
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:999px;
+      padding:0.65rem 1.1rem 0.65rem 2.75rem;
+      color:#e8ddd0;
+      font-family:'DM Sans',sans-serif; font-size:0.875rem;
+      outline:none; width:260px;
+      transition:border-color 0.22s,box-shadow 0.22s;
+    }
+    .search-input::placeholder { color:#4a4038; }
+    .search-input:focus {
+      border-color:#c8922a;
+      box-shadow:0 0 0 3px rgba(200,146,42,0.14);
+    }
+    .search-icon {
+      position:absolute; left:0.9rem; top:50%;
+      transform:translateY(-50%);
+      color:#7a6e66; font-size:0.9rem; pointer-events:none;
+    }
+ 
+    .filters { display:flex; gap:0.5rem; flex-wrap:wrap; }
+    .filter-btn {
+      padding:0.45rem 1rem; border-radius:999px;
+      background:rgba(255,255,255,0.04);
+      color:#9a8e82; border:1px solid rgba(255,255,255,0.08);
+      font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:600;
+      cursor:pointer; transition:background 0.2s,color 0.2s,border-color 0.2s;
+    }
+    .filter-btn:hover { background:rgba(196,48,80,0.12); color:#f5ede0; border-color:rgba(196,48,80,0.3); }
+    .filter-btn.active {
+      background:linear-gradient(135deg,#c43050,#9e1f3b);
+      color:#fff; border-color:transparent;
+      box-shadow:0 3px 10px rgba(196,48,80,0.35);
+    }
+ 
+    /* ── Table ── */
+    .table-card {
+      background:rgba(20,16,12,0.92);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(196,130,60,0.18);
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 24px 64px rgba(0,0,0,0.6);
+      animation:fadeUp 0.5s 0.12s ease both;
+    }
+ 
+    table { width:100%; border-collapse:collapse; font-size:0.875rem; }
+ 
+    thead th {
+      background:rgba(196,48,80,0.14);
+      color:#f5ede0;
+      font-size:0.73rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.08em;
+      padding:1rem 1.25rem;
+      border-bottom:1px solid rgba(196,48,80,0.2);
+      text-align:left;
+    }
+    tbody td {
+      padding:1rem 1.25rem;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      color:#e8ddd0; vertical-align:middle;
+    }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr {
+      cursor:pointer;
+      transition:background 0.2s;
+    }
+    tbody tr:hover td { background:rgba(196,48,80,0.06); }
+ 
+    .order-num { font-weight:700; color:#e8b84b; }
+ 
+    /* Status pills */
+    .pill {
+      padding:0.28rem 0.8rem; border-radius:999px;
+      font-size:0.72rem; font-weight:700;
+      display:inline-block; text-transform:uppercase; letter-spacing:0.05em;
+    }
+    .pill-pending    { background:rgba(234,179,8,0.15);  color:#fcd34d; border:1px solid rgba(234,179,8,0.28); }
+    .pill-processing { background:rgba(59,130,246,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.28); }
+    .pill-ready      { background:rgba(34,197,94,0.15);  color:#86efac; border:1px solid rgba(34,197,94,0.28); }
+    .pill-delivered  { background:rgba(16,185,129,0.12); color:#6ee7b7; border:1px solid rgba(16,185,129,0.22); }
+    .pill-cancelled  { background:rgba(185,28,28,0.15);  color:#fca5a5; border:1px solid rgba(185,28,28,0.28); }
+ 
+    .action-link {
+      color:#e8b84b; font-weight:600; text-decoration:none;
+      font-size:0.83rem; transition:color 0.2s;
+    }
+    .action-link:hover { color:#c8922a; }
+ 
+    /* ── Empty state ── */
+    .empty-state {
+      text-align:center; padding:6rem 2rem;
+      background:rgba(20,16,12,0.9);
+      border:1px solid rgba(196,130,60,0.15);
+      border-radius:20px;
+      animation:fadeUp 0.5s ease both;
+    }
+    .empty-state .icon { font-size:3.5rem; margin-bottom:1rem; }
+    .empty-state p { color:#7a6e66; font-size:1.05rem; }
+ 
+    .back-wrap { text-align:center; margin-top:2rem; animation:fadeUp 0.5s 0.2s ease both; }
+ 
+    @media (max-width:768px) {
+      .topbar { padding:0.85rem 1.25rem; }
+      .container { padding:0 1rem 3rem; }
+      .page-header { flex-direction:column; }
+      .search-input { width:100%; }
+      table { font-size:0.8rem; }
+      thead th, tbody td { padding:0.8rem 0.9rem; }
+    }
+  </style>
 </head>
-<body class="bg-image" style="background-image: url('/images/pastrey.jpg');">
-
-    <div class="admin-container">
-        <div class="admin-header">
-            <h1>All Orders</h1>
-            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
-                <div class="search-container">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="searchInput" class="search-bar" placeholder="Search customer, order #, status...">
-                </div>
-                <div class="filter-controls">
-                    <button class="filter-btn active" onclick="filterStatus('')">All</button>
-                    <button class="filter-btn" onclick="filterStatus('PENDING')">Pending</button>
-                    <button class="filter-btn" onclick="filterStatus('PROCESSING')">Processing</button>
-                    <button class="filter-btn" onclick="filterStatus('READY')">Ready</button>
-                    <button class="filter-btn" onclick="filterStatus('DELIVERED')">Delivered</button>
-                    <button class="filter-btn" onclick="filterStatus('CANCELLED')">Cancelled</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="order-table-container" th:if="${orders != null and !orders.empty}">
-            <table class="order-table" id="ordersTable">
-                <thead>
-                    <tr>
-                        <th>Order #</th>
-                        <th>Customer</th>
-                        <th>Payment</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Placed On</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="order : ${orders}" class="order-row" 
-                        th:data-customer="${order.customerName ?: order.user?.email ?: 'Guest'}"
-                        th:data-status="${order.status}"
-                        th:data-orderid="${order.id}"
-                        th:onclick="'window.location=\'' + @{/admin/orders/{id}(id=${order.id})} + '\''">
-                        <td><strong th:text="${orderNumber} ?: 'SB-' + ${order.id}"></strong></td>
-                        <td th:text="${order.customerName != null ? order.customerName : order.user?.email != null ? order.user.email : 'Guest'}"></td>                        <td th:text="${order.totalAmount} + ' KSh'"></td>
-                        <td>
-                            <span class="status-badge" th:classappend="'status-' + ${#strings.toLowerCase(order.status)}">
-                                <span th:text="${order.status ?: 'Not Set'}"></span>
-                            </span>
-                        </td>
-                        <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
-                        <td>
-                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="action-btn">View</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div th:if="${orders == null or orders.empty}" class="no-orders">
-            <span>🍪</span>
-            <p>No orders yet — the oven is warming up!</p>
-        </div>
-
-        <div style="text-align: center; margin: 3rem 0;">
-            <a href="/dashboard" class="btn btn-primary">Back to Dashboard</a>
-        </div>
+<body>
+ 
+  <div class="topbar">
+    <div class="brand">SMART<span>BAKE</span> Admin</div>
+    <div style="display:flex;gap:0.75rem;">
+      <a href="/admin/products" class="btn btn-ghost">Products</a>
+      <a href="/dashboard"      class="btn btn-ghost">Dashboard</a>
     </div>
-
-    <script>
-        // Live search filter
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#ordersTable tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
-            });
-        });
-
-        // Status filter buttons
-        function filterStatus(status) {
-            const rows = document.querySelectorAll('#ordersTable tbody tr');
-            rows.forEach(row => {
-                const rowStatus = row.getAttribute('data-status');
-                if (status === '' || rowStatus === status) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Highlight active button
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-    </script>
-
+  </div>
+ 
+  <div class="container">
+ 
+    <div class="page-header">
+      <h1>📦 All Orders</h1>
+      <div class="controls">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Search order, customer, status…">
+        </div>
+        <div class="filters">
+          <button class="filter-btn active" onclick="filterStatus('', this)">All</button>
+          <button class="filter-btn" onclick="filterStatus('PENDING', this)">Pending</button>
+          <button class="filter-btn" onclick="filterStatus('PROCESSING', this)">Processing</button>
+          <button class="filter-btn" onclick="filterStatus('READY', this)">Ready</button>
+          <button class="filter-btn" onclick="filterStatus('DELIVERED', this)">Delivered</button>
+          <button class="filter-btn" onclick="filterStatus('CANCELLED', this)">Cancelled</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Table -->
+    <div th:if="${orders != null and !orders.empty}" class="table-card">
+      <table id="ordersTable">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Payment</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Placed On</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="order : ${orders}"
+              class="order-row"
+              th:data-status="${order.status}"
+              th:onclick="'window.location=\'' + @{/admin/orders/{id}(id=${order.id})} + '\''">
+            <td><span class="order-num" th:text="'SB-' + ${order.id}"></span></td>
+            <td th:text="${order.customerName != null ? order.customerName : (order.user?.email != null ? order.user.email : 'Guest')}"></td>
+            <td th:text="${order.paymentMethod == 'CASH' ? '💵 Cash' : order.paymentMethod == 'PAYBILL' ? '📱 Paybill' : order.paymentMethod}"></td>
+            <td style="color:#e8b84b;font-weight:600;" th:text="${order.totalAmount} + ' KSh'"></td>
+            <td>
+              <span class="pill"
+                    th:classappend="'pill-' + ${#strings.toLowerCase(order.status)}"
+                    th:text="${order.status}"></span>
+            </td>
+            <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy, HH:mm')}"></td>
+            <td>
+              <a th:href="@{/admin/orders/{id}(id=${order.id})}"
+                 class="action-link"
+                 onclick="event.stopPropagation()">View →</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+ 
+    <!-- Empty -->
+    <div th:if="${orders == null or orders.empty}" class="empty-state">
+      <div class="icon">🍪</div>
+      <p>No orders yet — the oven is warming up!</p>
+    </div>
+ 
+    <div class="back-wrap">
+      <a href="/dashboard" class="btn btn-primary">← Back to Dashboard</a>
+    </div>
+ 
+  </div>
+ 
+  <script>
+    // Live search
+    document.getElementById('searchInput').addEventListener('input', function () {
+      const q = this.value.toLowerCase();
+      document.querySelectorAll('#ordersTable tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+ 
+    // Status filter
+    function filterStatus(status, btn) {
+      document.querySelectorAll('#ordersTable tbody tr').forEach(row => {
+        const s = row.getAttribute('data-status');
+        row.style.display = (!status || s === status) ? '' : 'none';
+      });
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+ 
 </body>
 </html>

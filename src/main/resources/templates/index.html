@@ -4,74 +4,448 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartBake – Fresh Treats Daily</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+ 
+    :root {
+      --blush:      #c43050;
+      --blush-dark: #9e1f3b;
+      --gold:       #c8922a;
+      --gold-light: #e8b84b;
+      --cream:      #f5ede0;
+      --bg:         #0f0d0b;
+      --bg-card:    #1a1612;
+      --text:       #e8ddd0;
+      --muted:      #7a6e66;
+      --border:     rgba(196,130,60,0.2);
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+ 
+    /* ── Navbar ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 2.5rem;
+      background: rgba(15,13,11,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+    }
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--cream);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+    .brand span { color: var(--gold-light); }
+ 
+    .nav-links { display: flex; align-items: center; gap: 0.75rem; }
+ 
+    .btn-ghost-nav {
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost-nav:hover { border-color: var(--gold); color: var(--gold-light); }
+ 
+    .btn-primary-nav {
+      padding: 0.5rem 1.25rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--blush), var(--blush-dark));
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(196,48,80,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary-nav:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(196,48,80,0.5); color: #fff; }
+ 
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2rem 5rem;
+      background: var(--bg) url('/images/croissants.jpg') center/cover no-repeat;
+      position: relative;
+      text-align: center;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(10,7,5,0.88) 0%,
+        rgba(10,7,5,0.55) 50%,
+        rgba(10,7,5,0.78) 100%
+      );
+    }
+ 
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+    }
+ 
+    .eyebrow {
+      display: inline-block;
+      background: rgba(200,146,42,0.15);
+      border: 1px solid rgba(200,146,42,0.28);
+      color: var(--gold-light);
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+ 
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.75rem, 7vw, 5.5rem);
+      color: var(--cream);
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 em { color: var(--gold-light); font-style: italic; }
+ 
+    .hero p {
+      color: rgba(245,237,224,0.75);
+      font-size: 1.1rem;
+      max-width: 520px;
+      margin: 0 auto 2.25rem;
+      line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+ 
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+ 
+    .btn-hero {
+      padding: 0.85rem 2rem;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.22s, box-shadow 0.22s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-hero-primary {
+      background: linear-gradient(135deg, var(--blush), var(--blush-dark));
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(196,48,80,0.4);
+    }
+    .btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(196,48,80,0.55); color: #fff; }
+    .btn-hero-outline {
+      background: transparent;
+      color: var(--cream);
+      border: 2px solid rgba(245,237,224,0.3);
+    }
+    .btn-hero-outline:hover { border-color: var(--gold-light); color: var(--gold-light); transform: translateY(-2px); }
+ 
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(22px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    /* ── scroll indicator ── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: rgba(245,237,224,0.35);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      animation: fadeUp 0.6s 0.5s ease both;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(200,146,42,0.5), transparent);
+      animation: scrollPulse 2s ease infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity:0.4; } 50% { opacity:1; }
+    }
+ 
+    /* ── Featured section ── */
+    .featured {
+      padding: 6rem 2rem;
+      background: var(--bg);
+    }
+ 
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .section-label::before,
+    .section-label::after {
+      content: '';
+      width: 50px;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-label span {
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+ 
+    .featured h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      color: var(--cream);
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+    .featured-sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 3.5rem;
+    }
+ 
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+ 
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.28s, border-color 0.28s, box-shadow 0.28s;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    }
+ 
+    .product-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    .product-card:hover .product-img { transform: scale(1.04); }
+ 
+    .product-body { padding: 1.25rem; }
+    .product-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--cream);
+      margin-bottom: 0.3rem;
+    }
+    .product-price {
+      color: var(--gold-light);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .btn-order {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1.25rem;
+      background: linear-gradient(135deg, var(--blush), var(--blush-dark));
+      color: #fff;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(196,48,80,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-order:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(196,48,80,0.5); color: #fff; }
+ 
+    /* ── CTA band ── */
+    .cta-band {
+      padding: 6rem 2rem;
+      text-align: center;
+      background: linear-gradient(135deg,
+        rgba(196,48,80,0.12) 0%,
+        rgba(200,146,42,0.08) 50%,
+        rgba(196,48,80,0.06) 100%
+      );
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-band::before {
+      content: '🧁';
+      position: absolute;
+      font-size: 18rem;
+      opacity: 0.03;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .cta-band h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      color: var(--cream);
+      margin-bottom: 0.75rem;
+    }
+    .cta-band p { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
+ 
+    .btn-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.9rem 2.25rem;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #1a1000;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(200,146,42,0.38);
+      transition: transform 0.22s, box-shadow 0.22s;
+    }
+    .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(200,146,42,0.5); color: #1a1000; }
+ 
+    /* ── Footer ── */
+    footer {
+      padding: 2.5rem 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer span { color: var(--blush); }
+ 
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav { padding: 0.9rem 1.25rem; }
+      .cta-row { flex-direction: column; align-items: center; }
+      .products-grid { gap: 1rem; }
+      .featured, .cta-band { padding: 4rem 1.25rem; }
+    }
+  </style>
 </head>
 <body>
  
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-brand">SMART<span>BAKE</span></div>
-    <div class="navbar-actions">
-      <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>
-      <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+  <nav>
+    <span class="brand">SMART<span>BAKE</span></span>
+    <div class="nav-links">
+      <a href="/login" class="btn-ghost-nav">Sign In</a>
+      <a href="/register" class="btn-primary-nav">Get Started</a>
     </div>
   </nav>
  
   <!-- Hero -->
-  <section class="hero bg-image" style="background-image:url('/images/croissants.jpg');">
+  <section class="hero">
     <div class="hero-content">
-      <div class="hero-eyebrow fade-up">🧁 Nairobi's Favourite Bakery</div>
-      <h1 class="fade-up delay-1">Baked with <em>Love</em>,<br>Delivered with Care</h1>
-      <p class="fade-up delay-2">Handcrafted treats made fresh every morning. Order online and pick up at your convenience.</p>
-      <div class="cta-buttons fade-up delay-3">
-        <a href="/products" class="btn btn-primary">Browse Treats</a>
-        <a href="/register" class="btn btn-ghost">Create Account</a>
+      <div class="eyebrow">🧁 Nairobi's Favourite Bakery</div>
+      <h1>Baked with <em>Love</em>,<br>Delivered with Care</h1>
+      <p>Handcrafted treats made fresh every morning. Order online and pick up at your convenience.</p>
+      <div class="cta-row">
+        <a href="/products" class="btn-hero btn-hero-primary">Browse Treats →</a>
+        <a href="/register" class="btn-hero btn-hero-outline">Create Account</a>
       </div>
     </div>
+    <div class="scroll-hint">Scroll</div>
   </section>
  
   <!-- Featured -->
   <section class="featured">
-    <div class="container">
-      <div class="section-header">
-        <h2>Our Best Sellers</h2>
-        <p>Made fresh every morning — get yours before they're gone</p>
+    <div class="section-label"><span>Best Sellers</span></div>
+    <h2>Our Most Loved Treats</h2>
+    <p class="featured-sub">Made fresh every morning — get yours before they're gone</p>
+ 
+    <div class="products-grid">
+      <div class="product-card">
+        <img src="/images/macarons.jpg" alt="Assorted Macarons" class="product-img">
+        <div class="product-body">
+          <div class="product-name">Assorted Macarons</div>
+          <div class="product-price">KES 1,200</div>
+          <a href="/products" class="btn-order">Order Now →</a>
+        </div>
       </div>
-      <div class="product-grid">
-        <div class="product-card fade-up">
-          <img src="/images/macarons.jpg" alt="Macarons" class="product-img">
-          <div class="product-body">
-            <div class="product-name">Assorted Macarons</div>
-            <div class="product-price">KES 1,200</div>
-            <a href="/products" class="btn btn-primary btn-sm">Order Now</a>
-          </div>
+      <div class="product-card">
+        <img src="/images/donuts.jpg" alt="Glazed Donuts" class="product-img">
+        <div class="product-body">
+          <div class="product-name">Glazed Donuts (6pc)</div>
+          <div class="product-price">KES 650</div>
+          <a href="/products" class="btn-order">Order Now →</a>
         </div>
-        <div class="product-card fade-up delay-1">
-          <img src="/images/donuts.jpg" alt="Donuts" class="product-img">
-          <div class="product-body">
-            <div class="product-name">Glazed Donuts (6pc)</div>
-            <div class="product-price">KES 650</div>
-            <a href="/products" class="btn btn-primary btn-sm">Order Now</a>
-          </div>
-        </div>
-        <div class="product-card fade-up delay-2">
-          <img src="/images/cupcakes.jpg" alt="Cupcakes" class="product-img">
-          <div class="product-body">
-            <div class="product-name">Chocolate Cupcakes (4pc)</div>
-            <div class="product-price">KES 800</div>
-            <a href="/products" class="btn btn-primary btn-sm">Order Now</a>
-          </div>
+      </div>
+      <div class="product-card">
+        <img src="/images/cupcakes.jpg" alt="Chocolate Cupcakes" class="product-img">
+        <div class="product-body">
+          <div class="product-name">Chocolate Cupcakes (4pc)</div>
+          <div class="product-price">KES 800</div>
+          <a href="/products" class="btn-order">Order Now →</a>
         </div>
       </div>
     </div>
   </section>
  
   <!-- CTA -->
-  <section class="cta-section">
+  <section class="cta-band">
     <h2>Ready for Something Sweet?</h2>
     <p>Order now and taste the difference. Pick up same day!</p>
-    <a href="/register" class="btn btn-gold">Start Your Order →</a>
+    <a href="/register" class="btn-gold">Start Your Order →</a>
   </section>
+ 
+  <footer>
+    © 2026 SmartBake · Made with <span>♥</span> in Nairobi
+  </footer>
  
 </body>
 </html>
