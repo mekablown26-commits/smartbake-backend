@@ -1,152 +1,296 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Product – SmartBake Admin</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background: var(--bg-dark);
-            min-height: 100vh;
-            margin: 0;
-            background-image: url('/images/glazed donuts.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        .form-container {
-            max-width: 600px;
-            margin: 4rem auto;
-            padding: 3rem 2.5rem;
-            background: rgba(28, 28, 28, 0.88);
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-            border: 1px solid rgba(233,30,99,0.15);
-        }
-        h1 {
-            text-align: center;
-            color: var(--accent-pink);
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-        }
-        .form-group {
-            margin-bottom: 1.8rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.6rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 12px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: var(--text-primary);
-            font-size: 1.05rem;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--accent-pink);
-            box-shadow: 0 0 0 4px rgba(233,30,99,0.25);
-        }
-        .btn-submit {
-            width: 100%;
-            padding: 1.2rem;
-            background: linear-gradient(135deg, var(--accent-pink), var(--accent-pink-dark));
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.15rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s;
-        }
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(233,30,99,0.5);
-        }
-        .preview-img {
-            max-width: 200px;
-            margin: 1rem auto;
-            display: block;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Product – SmartBake Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+ 
+    body {
+      font-family:'DM Sans',sans-serif;
+      min-height:100vh;
+      background:#0f0d0b url('/images/glazed donuts.jpg') center/cover fixed no-repeat;
+      color:#e8ddd0;
+      -webkit-font-smoothing:antialiased;
+      position:relative;
+    }
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background:linear-gradient(160deg, rgba(10,7,5,0.88) 0%, rgba(12,9,7,0.80) 100%);
+      z-index:0;
+    }
+    body > * { position:relative; z-index:1; }
+ 
+    /* ── Topbar ── */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem;
+      background:rgba(15,13,11,0.97);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(196,130,60,0.2);
+      position:sticky; top:0; z-index:100;
+    }
+    .brand {
+      font-family:'Playfair Display',serif;
+      font-size:1.25rem; font-weight:700;
+      color:#f5ede0;
+    }
+    .brand span { color:#e8b84b; }
+ 
+    .btn-back {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      padding:0.48rem 1.1rem; border-radius:999px;
+      font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600;
+      color:#9a8e82; border:1px solid rgba(255,255,255,0.1);
+      text-decoration:none;
+      transition:border-color 0.2s, color 0.2s;
+    }
+    .btn-back:hover { border-color:rgba(196,130,60,0.3); color:#e8b84b; }
+ 
+    /* ── Main card ── */
+    .page {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:3rem 1.5rem 5rem;
+      min-height:calc(100vh - 65px);
+    }
+ 
+    .card {
+      width:100%;
+      max-width:580px;
+      background:rgba(20,16,12,0.93);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(196,130,60,0.22);
+      border-radius:24px;
+      padding:2.5rem 2.25rem;
+      box-shadow:0 32px 80px rgba(0,0,0,0.65);
+      animation:slideUp 0.5s cubic-bezier(0.4,0,0.2,1) both;
+    }
+ 
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(28px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+ 
+    .card-title {
+      font-family:'Playfair Display',serif;
+      font-size:1.75rem;
+      color:#f5ede0;
+      text-align:center;
+      margin-bottom:0.35rem;
+    }
+    .card-subtitle {
+      text-align:center;
+      color:#7a6e66;
+      font-size:0.875rem;
+      margin-bottom:2rem;
+    }
+ 
+    /* ── Form ── */
+    .form { display:flex; flex-direction:column; gap:1.1rem; }
+ 
+    .field { display:flex; flex-direction:column; gap:0.38rem; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+ 
+    label {
+      font-size:0.77rem; font-weight:700;
+      color:#8a7e76;
+      text-transform:uppercase; letter-spacing:0.07em;
+    }
+ 
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px;
+      padding:0.8rem 1rem;
+      color:#e8ddd0;
+      font-family:'DM Sans',sans-serif;
+      font-size:0.9rem;
+      outline:none;
+      width:100%;
+      transition:border-color 0.22s, box-shadow 0.22s, background 0.22s;
+    }
+    input::placeholder, textarea::placeholder { color:#4a4038; }
+    input:focus, textarea:focus, select:focus {
+      border-color:#c8922a;
+      background:rgba(200,146,42,0.06);
+      box-shadow:0 0 0 3px rgba(200,146,42,0.14);
+    }
+    textarea { resize:vertical; min-height:90px; }
+    select { cursor:pointer; }
+    select option { background:#1a1612; color:#e8ddd0; }
+ 
+    /* File input */
+    .file-wrap {
+      position:relative;
+    }
+    input[type="file"] {
+      background:rgba(255,255,255,0.04);
+      border:1px dashed rgba(255,255,255,0.15);
+      border-radius:12px;
+      padding:0.8rem 1rem;
+      color:#9a8e82;
+      cursor:pointer;
+      width:100%;
+      font-size:0.875rem;
+    }
+    input[type="file"]:hover { border-color:rgba(196,130,60,0.4); }
+ 
+    /* Image preview */
+    .preview-wrap {
+      display:none;
+      margin-top:0.75rem;
+      text-align:center;
+    }
+    .preview-wrap.visible { display:block; }
+    #preview {
+      max-width:180px;
+      max-height:180px;
+      object-fit:cover;
+      border-radius:14px;
+      border:2px solid rgba(196,130,60,0.25);
+      box-shadow:0 8px 24px rgba(0,0,0,0.45);
+    }
+    .preview-label {
+      font-size:0.75rem;
+      color:#7a6e66;
+      margin-bottom:0.5rem;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+    }
+ 
+    /* Submit */
+    .btn-submit {
+      width:100%;
+      margin-top:0.5rem;
+      padding:0.95rem;
+      background:linear-gradient(135deg,#c43050,#9e1f3b);
+      color:#fff;
+      border:none;
+      border-radius:999px;
+      font-family:'DM Sans',sans-serif;
+      font-size:0.95rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 4px 20px rgba(196,48,80,0.38);
+      transition:transform 0.22s, box-shadow 0.22s;
+      letter-spacing:0.02em;
+    }
+    .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(196,48,80,0.55); }
+    .btn-submit:active { transform:scale(0.98); }
+ 
+    .back-link {
+      display:block;
+      text-align:center;
+      margin-top:1.25rem;
+      font-size:0.875rem;
+      color:#6a5e56;
+      text-decoration:none;
+      transition:color 0.2s;
+    }
+    .back-link:hover { color:#e8b84b; }
+ 
+    @media (max-width:540px) {
+      .card { padding:2rem 1.5rem; }
+      .field-row { grid-template-columns:1fr; }
+      .topbar { padding:0.85rem 1.25rem; }
+    }
+  </style>
 </head>
 <body>
-
-    <div class="form-container">
-        <h1>Add New Product</h1>
-
-        <form th:action="@{/admin/products}" th:object="${product}" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Product Name</label>
-                <input type="text" id="name" th:field="*{name}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" th:field="*{description}" rows="4"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="price">Price (KSh)</label>
-                <input type="number" id="price" th:field="*{price}" step="0.01" required>
-            </div>
-
-            <div class="form-group">
-                <label for="stock">Stock Quantity</label>
-                <input type="number" id="stock" th:field="*{stock}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" th:field="*{category}">
-                    <option value="Pastries">Pastries</option>
-                    <option value="Cakes">Cakes</option>
-                    <option value="Donuts">Donuts</option>
-                    <option value="Macarons">Macarons</option>
-                    <option value="Tartlets">Tartlets</option>
-                    <!-- add more as needed -->
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="image">Product Image</label>
-                <input type="file" id="image" name="imageFile" accept="image/*">
-                <img id="preview" class="preview-img" src="#" alt="Preview" style="display:none;">
-            </div>
-
-            <button type="submit" class="btn-submit">Save Product</button>
-        </form>
-
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="/admin/products" class="btn btn-primary">← Back to Products</a>
+ 
+  <div class="topbar">
+    <a href="/admin/products" class="btn-back">← Back to Products</a>
+    <div class="brand">🍰 SMART<span>BAKE</span> Admin</div>
+  </div>
+ 
+  <div class="page">
+    <div class="card">
+      <div class="card-title">Add New Product</div>
+      <p class="card-subtitle">Fill in the details below to add a new treat</p>
+ 
+      <form th:action="@{/admin/products}" th:object="${product}"
+            method="post" enctype="multipart/form-data" class="form">
+ 
+        <div class="field">
+          <label>Product Name *</label>
+          <input type="text" id="name" th:field="*{name}"
+                 placeholder="e.g. Chocolate Fudge Cake" required>
         </div>
+ 
+        <div class="field">
+          <label>Description</label>
+          <textarea id="description" th:field="*{description}"
+                    placeholder="Short description for customers"></textarea>
+        </div>
+ 
+        <div class="field-row">
+          <div class="field">
+            <label>Price (KSh) *</label>
+            <input type="number" id="price" th:field="*{price}"
+                   placeholder="e.g. 2500" step="0.01" min="1" required>
+          </div>
+          <div class="field">
+            <label>Stock Quantity *</label>
+            <input type="number" id="stock" th:field="*{stock}"
+                   placeholder="e.g. 20" min="0" required>
+          </div>
+        </div>
+ 
+        <div class="field">
+          <label>Category</label>
+          <select id="category" th:field="*{category}" title="Select a product category">
+            <option value="Pastries">Pastries</option>
+            <option value="Cakes">Cakes</option>
+            <option value="Donuts">Donuts</option>
+            <option value="Macarons">Macarons</option>
+            <option value="Tartlets">Tartlets</option>
+            <option value="Cupcakes">Cupcakes</option>
+            <option value="Cookies">Cookies</option>
+            <option value="Bread">Bread</option>
+          </select>
+        </div>
+ 
+        <div class="field">
+          <label>Product Image</label>
+          <div class="file-wrap">
+            <input type="file" id="imageFile" name="imageFile" accept="image/*" title="Choose a product image">
+          </div>
+          <div class="preview-wrap" id="previewWrap">
+            <p class="preview-label">Preview</p>
+            <img id="preview" src="#" alt="Preview">
+          </div>
+        </div>
+ 
+        <button type="submit" class="btn-submit">💾 Save Product</button>
+      </form>
+ 
+      <a href="/admin/products" class="back-link">← Cancel and go back</a>
     </div>
-
-    <script>
-        document.getElementById('image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('preview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
-
+  </div>
+ 
+  <script>
+    document.getElementById('imageFile').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById('preview').src = e.target.result;
+          document.getElementById('previewWrap').classList.add('visible');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+ 
 </body>
 </html>

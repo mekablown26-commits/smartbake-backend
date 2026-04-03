@@ -212,7 +212,7 @@
     </div>
     <div class="topbar-right">
       <span th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></span>
-      <button class="btn btn-primary btn-sm" onclick="openModal()">+ Add Product</button>
+      <a href="/admin/products/new" class="btn btn-primary btn-sm">+ Add Product</a>
       <form th:action="@{/logout}" method="post">
         <button type="submit" class="btn-warn">Sign out</button>
       </form>
@@ -248,7 +248,7 @@
     </div>
   </div>
  
-  <button class="fab" onclick="openModal()" title="Add Product">+</button>
+  <a href="/admin/products/new" class="fab" title="Add Product">+</a>
  
   <!-- Modal -->
   <div class="modal-overlay" id="productModal">
@@ -311,6 +311,12 @@
     }
     function closeModal() { modal.classList.remove('open'); }
     modal.addEventListener('click', e => { if(e.target===modal) closeModal(); });
+ 
+    // Auto-open the add modal if ?action=add is in the URL
+    // This is triggered when coming from the Flutter app's "Add Product" button
+    if (new URLSearchParams(window.location.search).get('action') === 'add') {
+      openModal();
+    }
   </script>
  
 </body>
