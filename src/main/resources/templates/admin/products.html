@@ -16,7 +16,6 @@
       -webkit-font-smoothing:antialiased;
     }
  
-    /* ── Topbar ── */
     .topbar {
       display:flex; align-items:center; justify-content:space-between;
       padding:1rem 2rem;
@@ -29,7 +28,6 @@
     }
     .topbar-left { display:flex; align-items:center; gap:1rem; }
     .topbar-right { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
- 
     .brand { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:600; color:#f5ede0; }
     .brand span { color:#e8b84b; }
  
@@ -66,7 +64,6 @@
       font-size:0.83rem;
     }
  
-    /* ── Product grid ── */
     .grid {
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
@@ -117,7 +114,6 @@
       border-top:1px solid rgba(255,255,255,0.05);
     }
  
-    /* ── FAB ── */
     .fab {
       position:fixed; bottom:1.5rem; right:1.5rem;
       width:54px; height:54px; border-radius:50%;
@@ -127,75 +123,14 @@
       box-shadow:0 8px 24px rgba(196,48,80,0.45);
       border:none; cursor:pointer; z-index:50;
       transition:transform 0.25s,box-shadow 0.25s;
+      text-decoration:none;
     }
     .fab:hover { transform:scale(1.1) rotate(45deg); box-shadow:0 12px 32px rgba(196,48,80,0.6); }
  
-    /* ── Modal ── */
-    .modal-overlay {
-      position:fixed; inset:0;
-      background:rgba(0,0,0,0.75);
-      -webkit-backdrop-filter:blur(6px);
-      backdrop-filter:blur(6px);
-      display:flex; align-items:center; justify-content:center;
-      z-index:999; opacity:0; pointer-events:none;
-      transition:opacity 0.26s ease;
-      padding:1.5rem;
-    }
-    .modal-overlay.open { opacity:1; pointer-events:all; }
- 
-    .modal-box {
-      background:#1e1a15;
-      border:1px solid rgba(196,130,60,0.22);
-      border-radius:20px;
-      width:100%; max-width:490px;
-      max-height:90vh; overflow-y:auto;
-      box-shadow:0 32px 80px rgba(0,0,0,0.7);
-      transform:scale(0.95);
-      transition:transform 0.26s ease;
-    }
-    .modal-overlay.open .modal-box { transform:scale(1); }
- 
-    .modal-header {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:1.4rem 1.75rem 1rem;
-      border-bottom:1px solid rgba(255,255,255,0.06);
-    }
-    .modal-title { font-family:'Playfair Display',serif; font-size:1.15rem; color:#f5ede0; font-weight:600; }
-    .modal-close {
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.1);
-      color:#9a8e82; border-radius:50%;
-      width:30px; height:30px; cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      font-size:0.95rem; transition:background 0.2s,color 0.2s;
-    }
-    .modal-close:hover { background:rgba(185,28,28,0.2); color:#fca5a5; border-color:rgba(185,28,28,0.4); }
- 
-    .modal-form { padding:1.25rem 1.75rem; display:flex; flex-direction:column; gap:1rem; }
-    .modal-footer { display:flex; gap:0.75rem; justify-content:flex-end; padding-top:0.5rem; }
- 
-    .field { display:flex; flex-direction:column; gap:0.35rem; }
-    label {
-      font-size:0.77rem; font-weight:600;
-      color:#8a7e76; text-transform:uppercase; letter-spacing:0.07em;
-    }
-    input, textarea {
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:11px;
-      padding:0.72rem 1rem;
-      color:#e8ddd0;
-      font-family:'DM Sans',sans-serif; font-size:0.9rem;
-      outline:none; width:100%;
-      transition:border-color 0.22s,box-shadow 0.22s,background 0.22s;
-    }
-    input::placeholder, textarea::placeholder { color:#4a4038; }
-    input:focus, textarea:focus {
-      border-color:#c8922a;
-      background:rgba(200,146,42,0.06);
-      box-shadow:0 0 0 3px rgba(200,146,42,0.14);
-    }
-    textarea { resize:vertical; min-height:70px; }
+    .empty-state { text-align:center; padding:6rem 2rem; }
+    .empty-state .icon { font-size:4rem; margin-bottom:1rem; }
+    .empty-state h3 { font-family:'Playfair Display',serif; font-size:1.5rem; color:#f5ede0; margin-bottom:0.5rem; }
+    .empty-state p { color:#7a6e66; margin-bottom:1.5rem; }
  
     @media (max-width:768px) {
       .topbar { padding:0.85rem 1.25rem; }
@@ -219,7 +154,16 @@
     </div>
   </div>
  
-  <div class="grid">
+  <!-- Empty state -->
+  <div th:if="${products == null or products.empty}" class="empty-state">
+    <div class="icon">🍰</div>
+    <h3>No products yet</h3>
+    <p>Add your first product to get started</p>
+    <a href="/admin/products/new" class="btn btn-primary">+ Add First Product</a>
+  </div>
+ 
+  <!-- Product grid -->
+  <div class="grid" th:unless="${products == null or products.empty}">
     <div th:each="product : ${products}" class="product-card">
       <img th:src="${product.imageUrl} ?: '/images/cakey.jpg'"
            th:alt="${product.name} ?: 'Product'"
@@ -228,19 +172,22 @@
         <div class="product-name" th:text="${product.name}"></div>
         <div class="product-price" th:text="${product.price} + ' KSh'"></div>
         <div>
-          <span th:if="${product.stockQuantity <= 10}"
-                class="stock-badge stock-low">⚠️ <span th:text="${product.stockQuantity} + ' left'"></span></span>
-          <span th:if="${product.stockQuantity > 10}"
-                class="stock-badge stock-ok">✅ <span th:text="${product.stockQuantity} + ' in stock'"></span></span>
+          <!-- FIX: use product.stock not product.stockQuantity -->
+          <span th:if="${product.stock != null and product.stock <= 10}"
+                class="stock-badge stock-low">⚠️ <span th:text="${product.stock} + ' left (low)'"></span></span>
+          <span th:if="${product.stock != null and product.stock > 10}"
+                class="stock-badge stock-ok">✅ <span th:text="${product.stock} + ' in stock'"></span></span>
+          <span th:if="${product.stock == null}"
+                class="stock-badge stock-low">⚠️ Stock unknown</span>
         </div>
       </div>
       <div class="product-footer">
-        <button class="btn btn-ghost btn-sm"
-                th:onclick="'openEditModal(' + ${product.id} + ', \'' + ${product.name} + '\', ' + ${product.price} + ', \'' + (${product.description} ?: '') + '\', ' + ${product.stockQuantity} + ', \'' + (${product.imageUrl} ?: '') + '\')'">
-          ✏️ Edit
-        </button>
+        <a th:href="@{/admin/products/edit/{id}(id=${product.id})}"
+           class="btn btn-ghost btn-sm">✏️ Edit</a>
+        <!-- FIX: proper POST form for delete -->
         <form th:action="@{/admin/products/delete/{id}(id=${product.id})}"
               method="post"
+              style="display:inline;"
               onsubmit="return confirm('Delete this product? This cannot be undone.')">
           <button type="submit" class="btn btn-danger btn-sm">🗑 Delete</button>
         </form>
@@ -249,75 +196,6 @@
   </div>
  
   <a href="/admin/products/new" class="fab" title="Add Product">+</a>
- 
-  <!-- Modal -->
-  <div class="modal-overlay" id="productModal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <span class="modal-title" id="modalTitle">Add New Product</span>
-        <button class="modal-close" onclick="closeModal()">✕</button>
-      </div>
-      <form id="productForm" method="post" class="modal-form">
-        <input type="hidden" id="productId" name="id">
-        <div class="field">
-          <label>Product Name *</label>
-          <input type="text" id="productName" name="name" placeholder="e.g. Chocolate Fudge Cake" required>
-        </div>
-        <div class="field">
-          <label>Price (KSh) *</label>
-          <input type="number" id="productPrice" name="price" placeholder="e.g. 2500" min="1" step="0.01" required>
-        </div>
-        <div class="field">
-          <label>Description</label>
-          <textarea id="productDesc" name="description" rows="2" placeholder="Short description for customers"></textarea>
-        </div>
-        <div class="field">
-          <label>Stock Quantity *</label>
-          <input type="number" id="productStock" name="stockQuantity" placeholder="e.g. 20" min="0" required>
-        </div>
-        <div class="field">
-          <label>Image URL</label>
-          <input type="text" id="productImage" name="imageUrl" placeholder="https://... or /images/...">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="submitBtn">💾 Save Product</button>
-        </div>
-      </form>
-    </div>
-  </div>
- 
-  <script>
-    const modal = document.getElementById('productModal');
-    function openModal() {
-      document.getElementById('modalTitle').textContent = 'Add New Product';
-      document.getElementById('productForm').action = '/admin/products/add';
-      document.getElementById('submitBtn').textContent = '➕ Add Product';
-      ['productId','productName','productPrice','productDesc','productStock','productImage']
-        .forEach(id => document.getElementById(id).value = '');
-      modal.classList.add('open');
-    }
-    function openEditModal(id,name,price,desc,stock,imageUrl) {
-      document.getElementById('modalTitle').textContent = 'Edit Product';
-      document.getElementById('productForm').action = '/admin/products/edit/' + id;
-      document.getElementById('submitBtn').textContent = '💾 Save Changes';
-      document.getElementById('productId').value = id;
-      document.getElementById('productName').value = name;
-      document.getElementById('productPrice').value = price;
-      document.getElementById('productDesc').value = desc;
-      document.getElementById('productStock').value = stock;
-      document.getElementById('productImage').value = imageUrl;
-      modal.classList.add('open');
-    }
-    function closeModal() { modal.classList.remove('open'); }
-    modal.addEventListener('click', e => { if(e.target===modal) closeModal(); });
- 
-    // Auto-open the add modal if ?action=add is in the URL
-    // This is triggered when coming from the Flutter app's "Add Product" button
-    if (new URLSearchParams(window.location.search).get('action') === 'add') {
-      openModal();
-    }
-  </script>
  
 </body>
 </html>
