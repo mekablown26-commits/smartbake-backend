@@ -44,11 +44,11 @@ public class ProductRestController {
  
     // ─── Admin: GET /api/admin/products ──────────────────────
     // Returns ALL non-deleted products for admin management view
-    @GetMapping("/admin/products")
-    public ResponseEntity<List<Product>> getAdminProducts() {
-        List<Product> products = productService.findAllActive();
-        return ResponseEntity.ok(products);
-    }
+ @GetMapping("/admin/products")
+public ResponseEntity<List<Product>> getAdminProducts() {
+    List<Product> products = productRepository.findByDeletedFalse();  // ✅ this
+    return ResponseEntity.ok(products);
+}
  
     // ─── Admin: POST /api/admin/products/delete/{id} ─────────
     // Soft deletes a product (sets deleted = true)
