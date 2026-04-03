@@ -45,9 +45,14 @@ public class ProductRestController {
     // ─── Admin: GET /api/admin/products ──────────────────────
     // Returns ALL non-deleted products for admin management view
  @GetMapping("/admin/products")
-public ResponseEntity<List<Product>> getAdminProducts() {
-    List<Product> products = productRepository.findByDeletedFalse();  // ✅ this
-    return ResponseEntity.ok(products);
+public ResponseEntity<List<Product>> getActiveProductsForAdmin() {
+    try {
+        List<Product> products = productService.findAllActive();
+        return ResponseEntity.ok(products);
+    } catch (Exception e) {
+        System.err.println("ERROR loading products: " + e.getMessage());
+        return ResponseEntity.ok(new java.util.ArrayList<>());
+    }
 }
  
     // ─── Admin: POST /api/admin/products/delete/{id} ─────────
