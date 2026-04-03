@@ -30,4 +30,11 @@ public class ProductController {
         return "admin/product-form";
     }
     
+    // Admin: view all products (including soft-deleted ones)
+@GetMapping("/admin/products")
+public String showAdminProducts(Model model) {
+    List<Product> products = productService.findAll(); // findAll, not findAllActive
+    model.addAttribute("products", products);
+    return "admin/products"; // maps to templates/admin/products.html
+}
 }

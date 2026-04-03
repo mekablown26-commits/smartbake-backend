@@ -1,8 +1,8 @@
 package com.smartbake.backend.service;
 
 import com.smartbake.backend.entity.Product;
-
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductService {
 
@@ -14,5 +14,5 @@ public interface ProductService {
 
     void softDeleteById(Long id);
 
-    Object findById(Long id);
+    Optional<Product> findById(Long id); // ✅ changed from Object to Optional<Product>
 }

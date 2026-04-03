@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -21,7 +22,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAll() {
-        return productRepository.findAll();
+        return productRepository.findAll(); // ✅ already correct
     }
 
     @Override
@@ -43,8 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Object findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    public Optional<Product> findById(Long id) { // ✅ fixed return type
+        return productRepository.findById(id);
     }
 }
